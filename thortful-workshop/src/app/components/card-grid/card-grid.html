@@ -18,6 +18,7 @@
           <span class="price">£{{ card.price }}</span>
           <span class="original-price" *ngIf="card.originalPrice">£{{ card.originalPrice }}</span>
         </div>
+        <button class="add-to-cart-btn" (click)="addToCart($event, card)">Add to Cart</button>
       </div>
     </a>
   </div>

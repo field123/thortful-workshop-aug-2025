@@ -40,11 +40,11 @@
             <span>Saved</span>
           </button>
           
-          <button class="action-btn basket">
+          <a routerLink="/cart" class="action-btn basket">
             <img src="https://images-fe.thortful.com/svg/basket2.svg" alt="Basket" width="20" height="20">
             <span>Basket</span>
             <span class="basket-count" *ngIf="basketCount() > 0">{{ basketCount() }}</span>
-          </button>
+          </a>
         </div>
       </div>
     </div>

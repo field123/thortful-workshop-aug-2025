@@ -122,6 +122,7 @@
   position: relative;
   color: #333;
   text-align: center;
+  text-decoration: none;
 }
 
 .action-btn:hover {

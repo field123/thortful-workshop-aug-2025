@@ -124,3 +124,21 @@
   color: #999;
   text-decoration: line-through;
 }
+
+.add-to-cart-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-to-cart-btn:hover {
+  background: #e55a2b;
+}
