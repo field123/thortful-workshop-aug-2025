@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm start` - Start development server on http://localhost:4200
 - `pnpm build` - Build production bundle
 - `pnpm test` - Run unit tests with Karma
-- `pnpm run serve:ssr:throful-workshop` - Run SSR server on port 4000
+- `pnpm run serve:ssr:thortful-workshop` - Run SSR server on port 4000
 
 ### Testing Commands
 - `pnpm test` - Run all unit tests
@@ -47,7 +47,7 @@ This is an Angular 20.1 application with Server-Side Rendering (SSR) using moder
 
 - `angular.json` - Angular workspace configuration with SSR setup
 - `tsconfig.json` - TypeScript strict mode enabled with ES2022 target
-- `package.json` - Note: project name has typo "throful-workshop"
+- `package.json` - Project configuration and dependencies
 
 ### Important Development Notes
 

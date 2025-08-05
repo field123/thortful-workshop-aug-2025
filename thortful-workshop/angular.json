@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "throful-workshop": {
+    "thortful-workshop": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -58,10 +58,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "throful-workshop:build:production"
+              "buildTarget": "thortful-workshop:build:production"
             },
             "development": {
-              "buildTarget": "throful-workshop:build:development"
+              "buildTarget": "thortful-workshop:build:development"
             }
           },
           "defaultConfiguration": "development"
