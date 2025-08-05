@@ -52,7 +52,7 @@ app.use((req, res, next) => {
  * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  * if not in production mode.
  */
-if (isMainModule(import.meta.url) && process.env['NODE_ENV'] !== 'production') {
+if (isMainModule(import.meta.url) && process.env['NODE_ENV'] !== "production") {
   const port = process.env['PORT'] || 4000;
   app.listen(port, (error) => {
     if (error) {
@@ -67,3 +67,8 @@ if (isMainModule(import.meta.url) && process.env['NODE_ENV'] !== 'production') {
  * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
  */
 export const reqHandler = createNodeRequestHandler(app);
+
+/**
+ * Export the Express app for Vercel
+ */
+export { app };
