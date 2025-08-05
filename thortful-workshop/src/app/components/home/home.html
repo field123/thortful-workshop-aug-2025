@@ -1,0 +1,148 @@
+<div class="home">
+  <section class="hero-banner">
+    <div class="hero-slide">
+      <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200" alt="Wedding Cards">
+      <div class="hero-content">
+        <h2>Beautiful Wedding Cards</h2>
+        <p>Celebrate their special day</p>
+        <a href="/wedding" class="hero-btn">Shop Wedding Cards</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="trust-section">
+    <div class="container">
+      <div class="trust-content">
+        <div class="trust-badge">
+          <strong>Excellent</strong>
+          <span>4.3 out of 5 star rating on Trustpilot</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Customer Favourites</h2>
+      <div class="category-grid">
+        <a href="/birthday" class="category-card">
+          <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=300" alt="Birthday Cards">
+          <h3>Birthday Cards</h3>
+        </a>
+        <a href="/anniversary" class="category-card">
+          <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=300" alt="Anniversary Cards">
+          <h3>Anniversary Cards</h3>
+        </a>
+        <a href="/card-packs" class="category-card">
+          <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=300" alt="Card Packs">
+          <h3>Card Packs</h3>
+        </a>
+        <a href="/wedding" class="category-card">
+          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=300" alt="Wedding Cards">
+          <h3>Wedding Cards</h3>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-light">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Birthday by Recipient</h2>
+        <a href="/birthday" class="see-all">See all cards</a>
+      </div>
+      <app-card-grid [cards]="birthdayCards()" [showCreator]="false"></app-card-grid>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Shop Our Gifting Range</h2>
+        <a href="/gifts" class="see-all">Browse Gift Ideas</a>
+      </div>
+      <div class="gift-grid">
+        <div class="gift-card">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300" alt="Birthday Gifts">
+          <h3>Birthday gifts</h3>
+        </div>
+        <div class="gift-card">
+          <img src="https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=300" alt="Tony's Chocolonely">
+          <h3>Tony's Chocolonely</h3>
+        </div>
+        <div class="gift-card">
+          <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=300" alt="Flowers and Plants">
+          <h3>Flowers and Plants</h3>
+        </div>
+        <div class="gift-card">
+          <img src="https://images.unsplash.com/photo-1528825871115-3581a5387919?w=300" alt="Wedding Gifts">
+          <h3>Wedding Gifts</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-light">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Birthday by Style</h2>
+        <a href="/birthday" class="see-all">See all cards</a>
+      </div>
+      <div class="style-grid">
+        <a href="/birthday/funny" class="style-card">
+          <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300" alt="Funny Cards">
+          <h3>Funny Cards</h3>
+        </a>
+        <a href="/birthday/rude" class="style-card">
+          <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=300" alt="Rude Cards">
+          <h3>Rude Cards</h3>
+        </a>
+        <a href="/birthday/cute" class="style-card">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300" alt="Cute Cards">
+          <h3>Cute Cards</h3>
+        </a>
+        <a href="/personalised/birthday" class="style-card">
+          <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300" alt="Photo Cards">
+          <h3>Photo Cards</h3>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-promo">
+    <div class="container">
+      <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?w=1200&h=300&fit=crop" alt="Get the app">
+      <div class="app-promo-content">
+        <h2>Get the Thortful App</h2>
+        <p>Never miss a birthday again!</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="marketplace-info">
+        <h1>The UK's First Online Greeting Card Marketplace</h1>
+        <p>
+          We are the largest online greeting cards marketplace, supported by a community of independent 
+          creators, illustrators and photographers who are the master minds behind our truly unique card 
+          creations. We have thousands of greeting cards for every occasion to choose from online, including 
+          Birthday cards, Kids Birthday cards, Anniversary cards, Personalised cards Wedding cards, New Baby 
+          cards and New Home cards. And all of our cards are available with next day card delivery, for those 
+          last-minute moments - just order before 6pm and your card will be dispatched the same day.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <div class="container">
+      <h2>Emails worth opening. (Promise.)</h2>
+      <p>Sign up for cool cards, juicy offers, and relationship-saving reminders.</p>
+      <form class="newsletter-form" (submit)="onNewsletterSubmit($event)">
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+  </section>
+</div>

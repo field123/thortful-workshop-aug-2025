@@ -1,0 +1,68 @@
+<header class="header">
+  <div class="header-top">
+    <div class="container">
+      <span class="promo-text">4 for £10 on A5 Cards</span>
+      <span class="tagline">The UK's 1st marketplace for thousands of independent creators</span>
+      <span class="delivery-info">Order before 1pm for same day dispatch (Mon-Fri excl bank holidays)</span>
+    </div>
+  </div>
+  
+  <div class="header-main">
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">
+          <img src="https://images-fe.thortful.com/img/template/logo-orange-bvi.svg" alt="Thortful">
+        </a>
+        
+        <div class="search-bar">
+          <input type="text" placeholder="Birthday card for a Gemini" (input)="onSearch($event)">
+          <button class="search-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="header-actions">
+          <button class="action-btn">
+            <img src="https://images-fe.thortful.com/svg/user.svg" alt="Sign in" width="20" height="20">
+            <span>Sign in</span>
+          </button>
+          
+          <button class="action-btn">
+            <img src="https://images-fe.thortful.com/img/action/reminder-calendar.svg" alt="Reminders" width="20" height="20">
+            <span>Reminders</span>
+          </button>
+          
+          <button class="action-btn">
+            <img src="https://images-fe.thortful.com/svg/heart2.svg" alt="Saved" width="20" height="20">
+            <span>Saved</span>
+          </button>
+          
+          <button class="action-btn basket">
+            <img src="https://images-fe.thortful.com/svg/basket2.svg" alt="Basket" width="20" height="20">
+            <span>Basket</span>
+            <span class="basket-count" *ngIf="basketCount() > 0">{{ basketCount() }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <nav class="main-nav">
+    <div class="container">
+      <ul class="nav-list">
+        <li><a routerLink="/birthday" routerLinkActive="active">Birthday</a></li>
+        <li><a routerLink="/card-packs" routerLinkActive="active">Card Packs</a></li>
+        <li><a routerLink="/kids-birthday" routerLinkActive="active">Kids Birthday</a></li>
+        <li><a routerLink="/anniversary" routerLinkActive="active">Anniversary</a></li>
+        <li><a routerLink="/card-gift" routerLinkActive="active">Card & Gift</a></li>
+        <li><a routerLink="/personalised" routerLinkActive="active">Personalised Cards</a></li>
+        <li><a routerLink="/occasions" routerLinkActive="active">All Occasions</a></li>
+        <li><a routerLink="/creators" routerLinkActive="active">Our Creators</a></li>
+        <li><a href="#" class="promo-link">Get £5 Off</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
