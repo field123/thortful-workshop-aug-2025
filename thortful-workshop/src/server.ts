@@ -37,15 +37,58 @@ app.use(
 
 /**
  * Handle all other requests by rendering the Angular application.
+ * Enhanced to pass cookies to the Angular SSR application
  */
 app.use((req, res, next) => {
+  // Parse cookies from request headers
+  const cookieHeader = req.headers.cookie || '';
+  const cookies = parseCookies(cookieHeader);
+  
   angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .handle(req, {
+      server: {
+        // Pass cookies to Angular's DI system
+        providers: [
+          {
+            provide: 'SERVER_REQUEST_COOKIES',
+            useValue: cookies
+          }
+        ]
+      }
+    })
+    .then((response) => {
+      if (response) {
+        writeResponseToNodeResponse(response, res);
+      } else {
+        next();
+      }
+    })
     .catch(next);
 });
+
+/**
+ * Parse cookies from cookie header string
+ */
+function parseCookies(cookieString: string): { [key: string]: string } {
+  const cookies: { [key: string]: string } = {};
+  
+  if (!cookieString) {
+    return cookies;
+  }
+
+  const pairs = cookieString.split(';');
+  
+  for (let pair of pairs) {
+    pair = pair.trim();
+    const [name, value] = pair.split('=');
+    
+    if (name && value) {
+      cookies[decodeURIComponent(name)] = decodeURIComponent(value);
+    }
+  }
+
+  return cookies;
+}
 
 /**
  * Start the server if this module is the main entry point.
