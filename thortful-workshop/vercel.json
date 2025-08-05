@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.mjs": {
+      "runtime": "nodejs20.x",
+      "includeFiles": "dist/**"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}
