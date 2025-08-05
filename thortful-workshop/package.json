@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:throful-workshop": "node dist/throful-workshop/server/server.mjs",
-    "build:ssr": "ng build && ng run throful-workshop:server",
+    "build:ssr": "ng build && ng run thortful-workshop:server",
     "vercel-build": "pnpm run build:ssr"
   },
   "prettier": {
