@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   elasticPath: {
-    clientId: 'LSKF89suDJpW6DkFMG1FfIlhXOi6aqKeDttTX1AIfT', // Add your Elastic Path client ID here
-    endpointUrl: 'https://epcc-integration.global.ssl.fastly.net'
+    clientId: 'Wa5pe8HsW3YvUaTg9pm1RA2ac674mhJvS7wpUyzQba', // Add your Elastic Path client ID here
+    endpointUrl: 'https://euwest.api.elasticpath.com'
   }
 };
