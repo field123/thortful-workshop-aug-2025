@@ -1,0 +1,144 @@
+<div class="membership-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Thortful Plus</h1>
+        <p class="hero-subtitle">Plus perk: 30% off ALL cards</p>
+        <p class="hero-description">
+          Same amazing perks! Save 30% on all cards – the perfect way to make every occasion special without breaking the bank.
+        </p>
+        <div class="hero-cta">
+          <button class="cta-button" (click)="onSignUp()">
+            Add Plus for £9.99 Per Year
+          </button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="/assets/images/plus-hero.jpg" alt="Thortful Plus Hero" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Grid -->
+  <section class="benefits-section">
+    <div class="container">
+      <h2 class="section-title">Your exclusive benefits auto applied at checkout</h2>
+      <div class="benefits-grid">
+        @for (benefit of benefits; track benefit.title) {
+          <div class="benefit-card">
+            <div class="benefit-icon">{{ benefit.icon }}</div>
+            <h3 class="benefit-title">{{ benefit.title }}</h3>
+            <p class="benefit-description">{{ benefit.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof -->
+  <section class="testimonials-section">
+    <div class="container">
+      <h2 class="section-title">5-star reviews from our happy customers</h2>
+      <div class="testimonials-grid">
+        @for (testimonial of testimonials; track testimonial.text) {
+          <div class="testimonial-card">
+            <div class="stars">
+              @for (star of [1,2,3,4,5]; track star) {
+                <span class="star">⭐</span>
+              }
+            </div>
+            <p class="testimonial-text">{{ testimonial.text }}</p>
+            <p class="testimonial-author">{{ testimonial.author }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to save on every card?</h2>
+        <p class="cta-subtitle">Join Thortful Plus today and start enjoying exclusive benefits</p>
+        @if (membershipStatus$().isActive) {
+          <div class="member-status">
+            <p class="member-badge">✨ You're a Thortful Plus member!</p>
+            <p class="member-info">Your benefits are active until {{ membershipStatus$().expiresAt | date }}</p>
+          </div>
+        } @else {
+          <button class="cta-button-large" (click)="onSignUp()">
+            Get Thortful Plus for £{{ plan.price }}/year
+          </button>
+          <p class="cta-disclaimer">Cancel anytime. T&Cs apply.</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="container">
+      <div class="faq-links">
+        <a href="/support/thortful-plus" class="faq-link">
+          <h3>Got a question?</h3>
+          <p>Learn More</p>
+        </a>
+        <a href="/terms/thortful-plus" class="faq-link">
+          <h3>The important bits</h3>
+          <p>Read Now</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sign-up Modal -->
+  @if (showSignUpModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeModal()">×</button>
+        
+        <h2 class="modal-title">Complete Your Thortful Plus Subscription</h2>
+        
+        <div class="subscription-summary">
+          <h3>{{ plan.name }}</h3>
+          <p class="price">£{{ plan.price }}/{{ plan.interval }}</p>
+          
+          <div class="benefits-summary">
+            <h4>Your benefits include:</h4>
+            <ul>
+              @for (benefit of plan.benefits; track benefit) {
+                <li>{{ benefit }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+        
+        @if (errorMessage()) {
+          <div class="error-message">{{ errorMessage() }}</div>
+        }
+        
+        <div class="modal-actions">
+          <button 
+            class="confirm-button" 
+            (click)="confirmSubscription()"
+            [disabled]="isProcessing()">
+            @if (isProcessing()) {
+              Processing...
+            } @else {
+              Subscribe for £{{ plan.price }}/year
+            }
+          </button>
+          <button class="cancel-button" (click)="closeModal()" [disabled]="isProcessing()">
+            Cancel
+          </button>
+        </div>
+        
+        <p class="terms-notice">
+          By subscribing, you agree to our <a href="/terms/thortful-plus">Terms & Conditions</a>
+        </p>
+      </div>
+    </div>
+  }
+</div>
