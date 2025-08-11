@@ -39,8 +39,6 @@ export interface CheckoutFormData {
     country: string;
   };
   sameAsShipping: boolean;
-  shippingMethod?: string;
-  shippingAmount?: number;
 }
 
 interface CheckoutState {
@@ -66,7 +64,7 @@ export class CheckoutService {
 
   public checkoutState$ = this.checkoutStateSubject.asObservable();
 
-  async processCheckout(formData: CheckoutFormData, stripe: any, elements: any): Promise<any> {
+  async processCheckout(formData: CheckoutFormData, requiresAccount: boolean): Promise<any> {
     try {
       this.updateState({ loading: true, error: null });
 
@@ -75,25 +73,8 @@ export class CheckoutService {
         throw new Error('No cart found');
       }
 
-      // Add shipping if provided
-      if (formData.shippingMethod && formData.shippingAmount) {
-        await this.addShippingToCart(cartId, formData.shippingMethod, formData.shippingAmount);
-      }
-
-      // Submit Stripe elements form
-      const { error: submitError } = await elements.submit();
-      if (submitError) {
-        throw new Error(submitError.message);
-      }
-
-      // Check if cart has subscription items
-      const items = await this.cartService.items$.toPromise();
-      const hasSubscription = items?.some(
-        (item: any) => item.type === 'subscription_item'
-      );
-
       // Convert cart to order
-      const order = hasSubscription && this.authService.getCurrentTokens().accountToken
+      const order = requiresAccount && this.authService.getCurrentTokens().accountToken
         ? await this.checkoutWithAccount(cartId, formData)
         : await this.checkoutAsGuest(cartId, formData);
 
@@ -114,28 +95,12 @@ export class CheckoutService {
       }
 
       this.updateState({ paymentIntentClientSecret: clientSecret });
-
-      // Confirm payment with Stripe
-      const stripeResult = await this.confirmStripePayment(
-        stripe,
-        elements,
-        clientSecret,
-        formData
-      );
-
-      if (stripeResult.error) {
-        throw new Error(stripeResult.error.message);
-      }
-
-      // Confirm payment with Elastic Path
-      await this.confirmElasticPathPayment(orderId, paymentId);
-
       this.updateState({ loading: false });
 
       return {
         orderId,
-        order,
-        payment
+        paymentId,
+        clientSecret
       };
     } catch (error: any) {
       this.updateState({ 
@@ -146,27 +111,6 @@ export class CheckoutService {
     }
   }
 
-  private async addShippingToCart(
-    cartId: string, 
-    shippingMethod: string, 
-    shippingAmount: number
-  ): Promise<void> {
-    await manageCarts({
-      path: { cartID: cartId },
-      body: {
-        data: {
-          type: 'custom_item',
-          name: 'Shipping',
-          sku: shippingMethod,
-          quantity: 1,
-          price: {
-            amount: shippingAmount,
-            includes_tax: true
-          }
-        }
-      }
-    });
-  }
 
   private async checkoutAsGuest(
     cartId: string, 
@@ -278,37 +222,7 @@ export class CheckoutService {
     });
   }
 
-  private async confirmStripePayment(
-    stripe: any,
-    elements: any,
-    clientSecret: string,
-    formData: CheckoutFormData
-  ): Promise<any> {
-    return await stripe.confirmPayment({
-      elements,
-      clientSecret,
-      redirect: 'if_required',
-      confirmParams: {
-        return_url: `${window.location.origin}/checkout/success`,
-        payment_method_data: {
-          billing_details: {
-            name: `${formData.billingAddress.firstName} ${formData.billingAddress.lastName}`,
-            email: formData.customer.email,
-            address: {
-              line1: formData.billingAddress.line1,
-              line2: formData.billingAddress.line2,
-              city: formData.billingAddress.city,
-              state: formData.billingAddress.region,
-              postal_code: formData.billingAddress.postcode,
-              country: formData.billingAddress.country
-            }
-          }
-        }
-      }
-    });
-  }
-
-  private async confirmElasticPathPayment(
+  async confirmElasticPathPayment(
     orderId: string, 
     transactionId: string
   ): Promise<any> {

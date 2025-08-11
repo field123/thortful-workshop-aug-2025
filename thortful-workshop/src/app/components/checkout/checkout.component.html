@@ -313,24 +313,6 @@
             }
           </section>
 
-          <!-- Shipping Method -->
-          <section class="form-section">
-            <h2>Shipping Method</h2>
-            <div class="shipping-options">
-              @for (option of shippingOptions; track option.value) {
-                <label class="radio-label shipping-option">
-                  <input 
-                    type="radio" 
-                    formControlName="shippingMethod"
-                    [value]="option.value">
-                  <div class="option-content">
-                    <span class="option-label">{{ option.label }}</span>
-                    <span class="option-price">{{ getShippingPrice(option.value) }}</span>
-                  </div>
-                </label>
-              }
-            </div>
-          </section>
 
           <!-- Payment -->
           <section class="form-section">
@@ -382,10 +364,6 @@
                 </div>
               }
 
-              <div class="summary-line">
-                <span>Shipping</span>
-                <span>{{ getShippingPrice(checkoutForm.get('shippingMethod')?.value) }}</span>
-              </div>
               
               <div class="summary-line">
                 <span>Tax</span>

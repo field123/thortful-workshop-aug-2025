@@ -35,12 +35,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   requiresAccount = false;
   stripeInitialized = false;
 
-  // Shipping options (in production, these would come from an API)
-  shippingOptions = [
-    { value: 'standard', label: 'Standard Shipping (5-7 days)', amount: 499 },
-    { value: 'express', label: 'Express Shipping (2-3 days)', amount: 999 },
-    { value: 'overnight', label: 'Overnight Shipping', amount: 1999 }
-  ];
 
   constructor() {
     this.checkoutForm = this.fb.group({
@@ -73,8 +67,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         postcode: [''],
         country: ['']
       }),
-      sameAsShipping: [true],
-      shippingMethod: ['standard', Validators.required]
+      sameAsShipping: [true]
     });
   }
 
@@ -184,19 +177,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     try {
       const formValue = this.checkoutForm.value;
-      const selectedShipping = this.shippingOptions.find(
-        opt => opt.value === formValue.shippingMethod
-      );
-
       const checkoutData: CheckoutFormData = {
         customer: formValue.customer,
         billingAddress: formValue.billingAddress,
         shippingAddress: formValue.sameAsShipping 
           ? formValue.billingAddress 
           : formValue.shippingAddress,
-        sameAsShipping: formValue.sameAsShipping,
-        shippingMethod: selectedShipping?.value,
-        shippingAmount: selectedShipping?.amount
+        sameAsShipping: formValue.sameAsShipping
       };
 
       // If account is required, create account first (not implemented in this example)
@@ -205,26 +192,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         console.log('Account creation would happen here');
       }
 
-      // For now, we'll use the simplified checkout flow
-      // In a real implementation, you would:
-      // 1. Create the order
-      // 2. Initialize payment and get client secret
-      // 3. Redirect to payment page or show payment modal
+      // Process checkout
+      const result = await this.checkoutService.processCheckout(checkoutData, this.requiresAccount);
       
-      // Simulate creating order and getting payment details
-      const cartId = this.cartService.getCartId();
-      if (!cartId) {
-        throw new Error('No cart found');
+      if (result.paymentId && result.clientSecret) {
+        // Redirect to payment page with order details
+        await this.router.navigate(['/checkout/payment'], {
+          queryParams: {
+            orderId: result.orderId,
+            clientSecret: result.clientSecret,
+            paymentId: result.paymentId
+          }
+        });
+      } else {
+        throw new Error('Failed to initialize payment');
       }
-
-      // For demo purposes, show an alert
-      alert('In a real implementation, this would:\n1. Create an order from your cart\n2. Initialize payment with Stripe\n3. Show a payment form\n\nFor now, we\'ll simulate a successful payment.');
-      
-      // Simulate success
-      localStorage.removeItem('ep_cart_id');
-      await this.router.navigate(['/checkout/success'], {
-        queryParams: { orderId: 'demo-order-' + Date.now() }
-      });
     } catch (error: any) {
       console.error('Checkout failed:', error);
       this.error = error.message || 'Checkout failed. Please try again.';
@@ -232,13 +214,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  getShippingPrice(method: string): string {
-    const option = this.shippingOptions.find(opt => opt.value === method);
-    if (option) {
-      return `$${(option.amount / 100).toFixed(2)}`;
-    }
-    return '$0.00';
-  }
 
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.keys(formGroup.controls).forEach(key => {

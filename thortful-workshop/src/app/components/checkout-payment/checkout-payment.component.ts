@@ -28,6 +28,7 @@ export class CheckoutPaymentComponent implements OnInit, OnDestroy {
   error: string | null = null;
   orderId: string | null = null;
   clientSecret: string | null = null;
+  paymentId: string | null = null;
 
   async ngOnInit() {
     // Get order ID and client secret from query params
@@ -36,8 +37,9 @@ export class CheckoutPaymentComponent implements OnInit, OnDestroy {
     ).subscribe(async params => {
       this.orderId = params['orderId'];
       this.clientSecret = params['clientSecret'];
+      this.paymentId = params['paymentId'];
       
-      if (!this.orderId || !this.clientSecret) {
+      if (!this.orderId || !this.clientSecret || !this.paymentId) {
         this.error = 'Invalid payment session';
         this.loading = false;
         return;
@@ -104,21 +106,41 @@ export class CheckoutPaymentComponent implements OnInit, OnDestroy {
     this.error = null;
 
     try {
-      // Submit the payment
-      const { error } = await this.stripe.confirmPayment({
+      // Submit the payment to Stripe
+      const { error, paymentIntent } = await this.stripe.confirmPayment({
         elements: this.elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/checkout/success`
-        }
+        redirect: 'if_required'
       });
 
       if (error) {
         // Show error to customer
         this.error = error.message || 'Payment failed';
         this.loading = false;
+        return;
       }
-      // Payment succeeded - Stripe will redirect to success page
+
+      // Payment succeeded with Stripe, now confirm with Elastic Path
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        try {
+          await this.checkoutService.confirmElasticPathPayment(this.orderId!, this.paymentId!);
+          
+          // Clear cart and redirect to success
+          localStorage.removeItem('ep_cart_id');
+          await this.router.navigate(['/checkout/success'], {
+            queryParams: { orderId: this.orderId }
+          });
+        } catch (epError: any) {
+          console.error('Failed to confirm payment with Elastic Path:', epError);
+          this.error = 'Payment processed but order confirmation failed. Please contact support.';
+          this.loading = false;
+        }
+      } else {
+        // Payment requires additional action
+        this.error = 'Payment requires additional verification';
+        this.loading = false;
+      }
     } catch (error: any) {
+      console.error('Payment error:', error);
       this.error = 'An unexpected error occurred';
       this.loading = false;
     }
