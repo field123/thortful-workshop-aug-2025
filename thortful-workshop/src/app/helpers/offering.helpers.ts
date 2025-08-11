@@ -70,14 +70,14 @@ export function formatPrice(plan: OfferingPlan): string {
   return '£9.99';
 }
 
-export function formatPriceForPricingOption(plan: OfferingPlan, pricingOptionId: string): string {
-  // Get price specific to a pricing option
-  if (!plan.meta?.prices || !pricingOptionId) return '£9.99';
+export function formatPriceForPricingOption(plan: OfferingPlan, pricingOption: OfferingPricingOption): string {
+  // The pricing option contains prices for each plan
+  if (!pricingOption.meta?.prices || !plan.id) return '£9.99';
 
-  const priceData = plan.meta.prices[pricingOptionId];
+  const priceData = pricingOption.meta.prices[plan.id];
   if (!priceData) return '£9.99';
 
-  const displayPrice = priceData.display_price?.with_tax || priceData.display_price?.without_tax;
+  const displayPrice = priceData.display_price?.without_tax || priceData.display_price?.with_tax;
 
   if (displayPrice?.formatted) {
     return displayPrice.formatted;

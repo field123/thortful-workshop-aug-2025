@@ -281,12 +281,12 @@
 }
 
 .pricing-tab:hover {
-  color: #5c35d3;
+  color: #ff6b6b;
 }
 
 .pricing-tab.active {
-  color: #5c35d3;
-  border-bottom-color: #5c35d3;
+  color: #ff6b6b;
+  border-bottom-color: #ff6b6b;
   font-weight: 600;
 }
 
@@ -595,27 +595,27 @@
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.5rem;
   }
-  
+
   .section-title {
     font-size: 2rem;
   }
-  
+
   .benefits-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .cta-title {
     font-size: 2rem;
   }
-  
+
   .modal-content {
     padding: 30px 20px;
   }
-  
+
   .modal-actions {
     flex-direction: column;
   }

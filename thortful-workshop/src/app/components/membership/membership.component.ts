@@ -182,9 +182,9 @@ export class MembershipComponent implements OnInit {
   }
 
   formatPrice(plan: OfferingPlan): string {
-    const pricingOptionId = this.selectedPricingOptionId();
-    if (pricingOptionId) {
-      return formatPriceForPricingOption(plan, pricingOptionId);
+    const pricingOption = this.getSelectedPricingOption();
+    if (pricingOption) {
+      return formatPriceForPricingOption(plan, pricingOption);
     }
     return formatPrice(plan);
   }
