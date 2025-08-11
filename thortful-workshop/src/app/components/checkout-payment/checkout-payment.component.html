@@ -2,7 +2,7 @@
   <div class="payment-content">
     <h1 class="payment-title">Complete Payment</h1>
 
-    @if (loading && !stripe) {
+    @if (loading) {
       <div class="loading-container">
         <div class="loading-spinner"></div>
         <p>Loading payment form...</p>
@@ -13,10 +13,42 @@
       <div class="alert alert-error">{{ error }}</div>
     }
 
-    @if (!loading || stripe) {
-      <form (submit)="handleSubmit(); $event.preventDefault()" class="payment-form">
-        <div class="payment-element-container">
-          <div id="payment-element"></div>
+    @if (!loading && cartTotal) {
+      <!-- Cart Summary -->
+      <div class="order-summary-box">
+        <h3>Cart Summary</h3>
+        <div class="order-detail">
+          <span>Subtotal:</span>
+          <span class="order-amount">{{ cartTotal.subtotal }}</span>
+        </div>
+        @if (cartTotal.hasDiscount) {
+          <div class="order-detail">
+            <span>Discount:</span>
+            <span class="order-amount">{{ cartTotal.discount }}</span>
+          </div>
+        }
+        <div class="order-detail">
+          <span>Tax:</span>
+          <span class="order-amount">{{ cartTotal.tax }}</span>
+        </div>
+        <div class="order-detail">
+          <span><strong>Total:</strong></span>
+          <span class="order-amount"><strong>{{ cartTotal.total }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Stripe Payment Form -->
+      <ngx-stripe-elements
+        #stripeElements
+        [stripe]="stripeService.stripe"
+        [elementsOptions]="elementsOptions"
+        (elements)="onElementsReady($event)">
+        
+        <div class="payment-form-container">
+          <h3>Payment Details</h3>
+          <ngx-stripe-payment 
+            [options]="paymentElementOptions">
+          </ngx-stripe-payment>
         </div>
 
         <div class="form-actions">
@@ -24,21 +56,27 @@
             type="button" 
             class="btn btn-secondary"
             (click)="cancel()"
-            [disabled]="loading">
+            [disabled]="processing">
             Cancel
           </button>
           <button 
-            type="submit" 
+            type="button" 
             class="btn btn-primary"
-            [disabled]="loading">
-            @if (loading) {
+            (click)="handlePayment()"
+            [disabled]="processing || loading"
+            @if (processing) {
               Processing...
             } @else {
-              Pay Now
+              Create Payment Token
             }
           </button>
         </div>
-      </form>
+      </ngx-stripe-elements>
+
+      <div class="payment-info">
+        <p>This is a test implementation that creates a Stripe confirmation token.</p>
+        <p>Check the browser console for the token details.</p>
+      </div>
     }
   </div>
 </div>
