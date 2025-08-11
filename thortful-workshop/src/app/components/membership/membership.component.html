@@ -128,7 +128,7 @@
                 class="pricing-tab"
                 [class.active]="selectedPricingOptionId() === option.id"
                 (click)="onPricingOptionChange(option.id)">
-                {{ option.attributes?.name || 'Option' }}
+                {{ option.attributes.name || 'Option' }}
               </button>
             }
           </div>

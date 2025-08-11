@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { type CartIncluded } from '@epcc-sdk/sdks-shopper';
 
@@ -16,6 +16,7 @@ type CartItem = NonNullable<CartIncluded['items']>[number];
 })
 export class CartComponent {
   cartService = inject(CartService);
+  private router = inject(Router);
   promoCode = '';
 
   getItemId(item: CartItem): string {
@@ -125,5 +126,9 @@ export class CartComponent {
     } catch (error) {
       console.error('Failed to refresh cart:', error);
     }
+  }
+
+  proceedToCheckout() {
+    this.router.navigate(['/checkout']);
   }
 }

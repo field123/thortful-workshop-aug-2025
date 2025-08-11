@@ -35,6 +35,9 @@ importers:
       '@epcc-sdk/sdks-shopper':
         specifier: ^0.0.34
         version: 0.0.34
+      '@stripe/stripe-js':
+        specifier: ^7.8.0
+        version: 7.8.0
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -1136,6 +1139,10 @@ packages:
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+
+  '@stripe/stripe-js@7.8.0':
+    resolution: {integrity: sha512-DNXRfYUgkZlrniQORbA/wH8CdFRhiBSE0R56gYU0V5vvpJ9WZwvGrz9tBAZmfq2aTgw6SK7mNpmTizGzLWVezw==}
+    engines: {node: '>=12.16'}
 
   '@tufjs/canonical-json@2.0.0':
     resolution: {integrity: sha512-yVtV8zsdo8qFHe+/3kw81dSLyF7D576A5cCFCi4X7B39tWT7SekaEFUnvnWJHz+9qO7qJTah1JbrDjWKqFtdWA==}
@@ -3849,6 +3856,8 @@ snapshots:
       '@sigstore/protobuf-specs': 0.4.3
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@stripe/stripe-js@7.8.0': {}
 
   '@tufjs/canonical-json@2.0.0': {}
 
