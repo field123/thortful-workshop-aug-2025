@@ -124,11 +124,11 @@
         @if (allPricingOptions.length > 1) {
           <div class="pricing-option-tabs">
             @for (option of allPricingOptions; track option.id) {
-              <button 
+              <button
                 class="pricing-tab"
                 [class.active]="selectedPricingOptionId() === option.id"
                 (click)="onPricingOptionChange(option.id)">
-                {{ option.name || 'Option' }}
+                {{ option.attributes?.name || 'Option' }}
               </button>
             }
           </div>
@@ -142,9 +142,9 @@
             <div class="plans-grid">
               @for (plan of availablePlans; track plan.id) {
                 <label class="plan-option" [class.selected]="selectedPlanId() === plan.id">
-                  <input 
-                    type="radio" 
-                    name="plan" 
+                  <input
+                    type="radio"
+                    name="plan"
                     [value]="plan.id"
                     [checked]="selectedPlanId() === plan.id"
                     (change)="onPlanChange(plan.id)">

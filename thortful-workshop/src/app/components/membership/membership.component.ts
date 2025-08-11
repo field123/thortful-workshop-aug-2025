@@ -6,6 +6,16 @@ import { AuthService } from '../../services/auth.service';
 import { MembershipService } from '../../services/membership.service';
 import { OfferingService } from '../../services/offering.service';
 import { CartService } from '../../services/cart.service';
+import {
+  getPlans,
+  getPlanById,
+  getPricingOptionsForPlan,
+  getPlansForPricingOption,
+  formatPrice,
+  formatPriceForPricingOption,
+  formatPricingOptionInterval
+} from '../../helpers/offering.helpers';
+import type { OfferingPlan, OfferingPricingOption } from '@epcc-sdk/sdks-shopper';
 
 const OFFERING_ID = '5bae1137-59c7-409a-87d6-72023fa22b17';
 
@@ -98,14 +108,15 @@ export class MembershipComponent implements OnInit {
     await this.offeringService.fetchOffering(OFFERING_ID);
 
     // Initialize with the first plan and its first pricing option
-    const plans = this.offeringService.getPlans();
+    const offering = this.offeringService.offering$();
+    const plans = getPlans(offering);
     if (plans.length > 0) {
       const firstPlan = plans[0];
       if (firstPlan.id) {
         this.selectedPlanId.set(firstPlan.id);
-        
+
         // Get pricing options for this plan
-        const pricingOptions = this.getPricingOptions(firstPlan);
+        const pricingOptions = getPricingOptionsForPlan(offering, firstPlan);
         if (pricingOptions.length > 0 && pricingOptions[0].id) {
           this.selectedPricingOptionId.set(pricingOptions[0].id);
         }
@@ -113,60 +124,43 @@ export class MembershipComponent implements OnInit {
     }
   }
 
-  getSelectedPlan() {
+  getSelectedPlan(): OfferingPlan | undefined {
     const planId = this.selectedPlanId();
-    if (!planId) return null;
-    return this.offeringService.getPlanById(planId);
+    if (!planId) return undefined;
+    const offering = this.offeringService.offering$();
+    return getPlanById(offering, planId);
   }
 
-  getPricingOptions(plan: any) {
-    // First check if pricing options are directly on the plan
-    if (plan?.attributes?.pricing_options && Array.isArray(plan.attributes.pricing_options)) {
-      return plan.attributes.pricing_options;
-    }
-    
-    // Check if pricing option IDs are in relationships
-    if (plan?.relationships?.pricing_options?.data && Array.isArray(plan.relationships.pricing_options.data)) {
-      // Get the actual pricing option objects from the offering service
-      const allPricingOptions = this.offeringService.getPricingOptions();
-      const planPricingOptionIds = plan.relationships.pricing_options.data.map((po: any) => po.id);
-      return allPricingOptions.filter((option: any) => planPricingOptionIds.includes(option.id));
-    }
-    
-    return [];
-  }
-
-  getSelectedPricingOption() {
+  getSelectedPricingOption(): OfferingPricingOption | undefined {
     const plan = this.getSelectedPlan();
     const pricingOptionId = this.selectedPricingOptionId();
-    if (!plan || !pricingOptionId) return null;
-    
-    const pricingOptions = this.getPricingOptions(plan);
-    return pricingOptions.find((option: any) => option.id === pricingOptionId);
+    if (!plan || !pricingOptionId) return undefined;
+
+    const offering = this.offeringService.offering$();
+    const pricingOptions = getPricingOptionsForPlan(offering, plan);
+    return pricingOptions.find(option => option.id === pricingOptionId);
   }
 
-  getAllUniquePricingOptions() {
-    const plans = this.offeringService.getPlans();
-    const pricingOptionsMap = new Map();
-    
-    plans.forEach((plan: any) => {
-      const pricingOptions = this.getPricingOptions(plan);
-      pricingOptions.forEach((option: any) => {
-        if (!pricingOptionsMap.has(option.id)) {
+  getAllUniquePricingOptions(): OfferingPricingOption[] {
+    const offering = this.offeringService.offering$();
+    const plans = getPlans(offering);
+    const pricingOptionsMap = new Map<string, OfferingPricingOption>();
+
+    plans.forEach(plan => {
+      const pricingOptions = getPricingOptionsForPlan(offering, plan);
+      pricingOptions.forEach(option => {
+        if (option.id && !pricingOptionsMap.has(option.id)) {
           pricingOptionsMap.set(option.id, option);
         }
       });
     });
-    
+
     return Array.from(pricingOptionsMap.values());
   }
 
-  getPlansForPricingOption(pricingOptionId: string) {
-    const plans = this.offeringService.getPlans();
-    return plans.filter((plan: any) => {
-      const pricingOptions = this.getPricingOptions(plan);
-      return pricingOptions.some((option: any) => option.id === pricingOptionId);
-    });
+  getPlansForPricingOption(pricingOptionId: string): OfferingPlan[] {
+    const offering = this.offeringService.offering$();
+    return getPlansForPricingOption(offering, pricingOptionId);
   }
 
   onPlanChange(planId: string | undefined) {
@@ -177,7 +171,7 @@ export class MembershipComponent implements OnInit {
   onPricingOptionChange(pricingOptionId: string | undefined) {
     if (!pricingOptionId) return;
     this.selectedPricingOptionId.set(pricingOptionId);
-    
+
     // Reset plan selection to first plan with this pricing option
     const plansForOption = this.getPlansForPricingOption(pricingOptionId);
     if (plansForOption.length > 0 && plansForOption[0].id) {
@@ -187,17 +181,21 @@ export class MembershipComponent implements OnInit {
     }
   }
 
-  formatPrice(plan: any) {
-    if (!plan?.attributes?.prices?.[0]) return '£9.99';
-    const price = plan.attributes.prices[0];
-    const amount = (price.unit_amount?.amount || 999) / 100;
-    return `£${amount.toFixed(2)}`;
+  formatPrice(plan: OfferingPlan): string {
+    const pricingOption = this.getSelectedPricingOption();
+    if (pricingOption) {
+      return formatPriceForPricingOption(plan, pricingOption);
+    }
+    return formatPrice(plan);
   }
 
-  formatInterval(plan: any) {
-    if (!plan?.attributes?.billing_frequency) return 'year';
-    const frequency = plan.attributes.billing_frequency;
-    return frequency === 'annually' ? 'year' : frequency;
+  formatInterval(plan: OfferingPlan): string {
+    // Get the selected pricing option to determine the interval
+    const pricingOption = this.getSelectedPricingOption();
+    if (pricingOption) {
+      return formatPricingOptionInterval(pricingOption);
+    }
+    return 'year';
   }
 
   async onSignUp() {
@@ -227,12 +225,12 @@ export class MembershipComponent implements OnInit {
       }
 
       const pricingOptionId = this.selectedPricingOptionId();
-      
+
       if (!pricingOptionId) {
         this.errorMessage.set('Please select a pricing option');
         return;
       }
-      
+
       // Add the subscription to cart
       await this.cartService.addSubscriptionToCart(OFFERING_ID, planId, pricingOptionId);
 
