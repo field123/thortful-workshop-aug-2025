@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.cartService.itemCount$
       .pipe(takeUntil(this.destroy$))
       .subscribe(count => {
-        this.basketCount.set(count);
+        this.basketCount.set(count || 0);
       });
   }
   

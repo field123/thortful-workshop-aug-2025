@@ -1,0 +1,101 @@
+<div class="cart-container">
+  <h1 class="cart-title">Your Cart</h1>
+  
+  @if ((cartService.loading$ | async)) {
+    <div class="loading">Loading cart...</div>
+  } @else if ((cartService.error$ | async)) {
+    <div class="error">{{ cartService.error$ | async }}</div>
+  } @else {
+    @let items = cartService.items$ | async;
+    @if (items && items.length > 0) {
+      <div class="cart-content">
+        <div class="cart-items">
+          @for (item of items; track getItemId(item)) {
+            <div class="cart-item">
+              <div class="item-info">
+                <h3 class="item-name">{{ getItemName(item) }}</h3>
+                @if (getItemDescription(item)) {
+                  <p class="item-description">{{ getItemDescription(item) }}</p>
+                }
+                @if (getItemType(item) === 'subscription_item') {
+                  <span class="item-badge">Subscription</span>
+                }
+              </div>
+              
+              <div class="item-controls">
+                @let itemQuantity = getItemQuantity(item);
+                @if (getItemType(item) !== 'subscription_item' && itemQuantity !== undefined) {
+                  <div class="quantity-controls">
+                    <button 
+                      class="quantity-btn" 
+                      (click)="updateQuantity(getItemId(item), itemQuantity - 1)"
+                      [disabled]="itemQuantity <= 1">
+                      -
+                    </button>
+                    <span class="quantity">{{ itemQuantity }}</span>
+                    <button 
+                      class="quantity-btn" 
+                      (click)="updateQuantity(getItemId(item), itemQuantity + 1)">
+                      +
+                    </button>
+                  </div>
+                }
+                
+                <div class="item-price">
+                  {{ getItemPrice(item) }}
+                  @let quantity = getItemQuantity(item);
+                  @if (quantity && quantity > 1) {
+                    <span class="item-total">
+                      Total: {{ getItemTotal(item) }}
+                    </span>
+                  }
+                </div>
+                
+                <button class="remove-btn" (click)="removeItem(getItemId(item))">
+                  Remove
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+        
+        <div class="cart-summary">
+          <h2>Order Summary</h2>
+          @let totals = cartService.totals$ | async;
+          @if (totals) {
+            <div class="summary-line">
+              <span>Subtotal</span>
+              <span>{{ totals.subtotal }}</span>
+            </div>
+            
+            @if (totals.hasDiscount) {
+              <div class="summary-line discount">
+                <span>Discount</span>
+                <span>{{ totals.discount }}</span>
+              </div>
+            }
+            
+            <div class="summary-line">
+              <span>Tax</span>
+              <span>{{ totals.tax }}</span>
+            </div>
+            
+            <div class="summary-line total">
+              <span>Total</span>
+              <span>{{ totals.total }}</span>
+            </div>
+          }
+          
+          <button class="checkout-btn">
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="empty-cart">
+        <p>Your cart is empty</p>
+        <a routerLink="/" class="continue-shopping">Continue Shopping</a>
+      </div>
+    }
+  }
+</div>

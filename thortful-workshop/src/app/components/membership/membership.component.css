@@ -67,6 +67,12 @@
   display: none; /* Hidden for now as we don't have the image */
 }
 
+.error-text {
+  color: #ff4444;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
 /* Benefits Section */
 .benefits-section {
   padding: 80px 0;
@@ -252,6 +258,38 @@
   font-weight: 500;
 }
 
+/* Pricing Option Tabs */
+.pricing-option-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.pricing-tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  position: relative;
+  bottom: -2px;
+}
+
+.pricing-tab:hover {
+  color: #5c35d3;
+}
+
+.pricing-tab.active {
+  color: #5c35d3;
+  border-bottom-color: #5c35d3;
+  font-weight: 600;
+}
+
 /* Member Status */
 .member-status {
   background: rgba(255, 255, 255, 0.2);
@@ -326,6 +364,106 @@
   color: #333;
 }
 
+/* Plan Selection */
+.plan-selection {
+  margin-bottom: 1.5rem;
+}
+
+.plan-selection h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.plans-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plan-option {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.plan-option:hover {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+.plan-option.selected {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+.plan-option input[type="radio"] {
+  margin-right: 12px;
+}
+
+.plan-name {
+  flex: 1;
+  font-weight: 500;
+  color: #333;
+}
+
+.plan-price {
+  font-weight: 600;
+  color: #ff6b6b;
+}
+
+/* Pricing Option Selection */
+.pricing-option-selection {
+  margin-bottom: 1.5rem;
+}
+
+.pricing-option-selection h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.pricing-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pricing-option {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pricing-option:hover {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+.pricing-option.selected {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+.pricing-option input[type="radio"] {
+  margin-right: 12px;
+}
+
+.option-name {
+  font-weight: 500;
+  color: #333;
+}
+
 .subscription-summary {
   background: #f8f8f8;
   padding: 20px;
@@ -344,6 +482,13 @@
   font-weight: 700;
   color: #ff6b6b;
   margin-bottom: 1rem;
+}
+
+.plan-description {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
 }
 
 .benefits-summary {

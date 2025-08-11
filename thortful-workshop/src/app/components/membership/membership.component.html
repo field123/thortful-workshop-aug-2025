@@ -9,9 +9,20 @@
           Same amazing perks! Save 30% on all cards – the perfect way to make every occasion special without breaking the bank.
         </p>
         <div class="hero-cta">
-          <button class="cta-button" (click)="onSignUp()">
-            Add Plus for £9.99 Per Year
-          </button>
+          @if (offeringLoading$()) {
+            <button class="cta-button" disabled>
+              Loading...
+            </button>
+          } @else if (offeringError$()) {
+            <p class="error-text">{{ offeringError$() }}</p>
+          } @else {
+            @let selectedPlan = getSelectedPlan();
+            @if (selectedPlan) {
+              <button class="cta-button" (click)="onSignUp()">
+                Add Plus for {{ formatPrice(selectedPlan) }}/{{ formatInterval(selectedPlan) }}
+              </button>
+            }
+          }
         </div>
       </div>
       <div class="hero-image">
@@ -68,9 +79,16 @@
             <p class="member-info">Your benefits are active until {{ membershipStatus$().expiresAt | date }}</p>
           </div>
         } @else {
-          <button class="cta-button-large" (click)="onSignUp()">
-            Get Thortful Plus for £{{ plan.price }}/year
-          </button>
+          @let selectedPlan = getSelectedPlan();
+          @if (selectedPlan) {
+            <button class="cta-button-large" (click)="onSignUp()">
+              Get Thortful Plus for {{ formatPrice(selectedPlan) }}/{{ formatInterval(selectedPlan) }}
+            </button>
+          } @else {
+            <button class="cta-button-large" (click)="onSignUp()">
+              Get Thortful Plus
+            </button>
+          }
           <p class="cta-disclaimer">Cancel anytime. T&Cs apply.</p>
         }
       </div>
@@ -98,43 +116,95 @@
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <button class="modal-close" (click)="closeModal()">×</button>
-        
+
         <h2 class="modal-title">Complete Your Thortful Plus Subscription</h2>
-        
+
+        <!-- Pricing Option Selection (Toggle/Tabs) -->
+        @let allPricingOptions = getAllUniquePricingOptions();
+        @if (allPricingOptions.length > 1) {
+          <div class="pricing-option-tabs">
+            @for (option of allPricingOptions; track option.id) {
+              <button 
+                class="pricing-tab"
+                [class.active]="selectedPricingOptionId() === option.id"
+                (click)="onPricingOptionChange(option.id)">
+                {{ option.name || 'Option' }}
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Plan Selection -->
+        @let availablePlans = getPlansForPricingOption(selectedPricingOptionId() || '');
+        @if (availablePlans.length > 1) {
+          <div class="plan-selection">
+            <h3>Choose your plan:</h3>
+            <div class="plans-grid">
+              @for (plan of availablePlans; track plan.id) {
+                <label class="plan-option" [class.selected]="selectedPlanId() === plan.id">
+                  <input 
+                    type="radio" 
+                    name="plan" 
+                    [value]="plan.id"
+                    [checked]="selectedPlanId() === plan.id"
+                    (change)="onPlanChange(plan.id)">
+                  <span class="plan-name">{{ plan.attributes.name || 'Plan' }}</span>
+                  <span class="plan-price">{{ formatPrice(plan) }}/{{ formatInterval(plan) }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        }
+
         <div class="subscription-summary">
-          <h3>{{ plan.name }}</h3>
-          <p class="price">£{{ plan.price }}/{{ plan.interval }}</p>
-          
+          @let selectedPlan = getSelectedPlan();
+          @if (selectedPlan) {
+            <h3>{{ selectedPlan.attributes.name || 'Thortful Plus' }}</h3>
+            <p class="price">{{ formatPrice(selectedPlan) }}/{{ formatInterval(selectedPlan) }}</p>
+
+            @if (selectedPlan.attributes.description) {
+              <p class="plan-description">{{ selectedPlan.attributes.description }}</p>
+            }
+          } @else {
+            <h3>Thortful Plus</h3>
+            <p class="price">£9.99/year</p>
+          }
+
           <div class="benefits-summary">
             <h4>Your benefits include:</h4>
             <ul>
-              @for (benefit of plan.benefits; track benefit) {
-                <li>{{ benefit }}</li>
+              @for (benefit of benefits; track benefit.title) {
+                <li>{{ benefit.title }}</li>
               }
             </ul>
           </div>
         </div>
-        
+
         @if (errorMessage()) {
           <div class="error-message">{{ errorMessage() }}</div>
         }
-        
+
         <div class="modal-actions">
-          <button 
-            class="confirm-button" 
+          <button
+            class="confirm-button"
             (click)="confirmSubscription()"
             [disabled]="isProcessing()">
             @if (isProcessing()) {
               Processing...
             } @else {
-              Subscribe for £{{ plan.price }}/year
+              @let selectedPlan = getSelectedPlan();
+              @if (selectedPlan) {
+                Add to Cart - {{ formatPrice(selectedPlan) }}/{{ formatInterval(selectedPlan) }}
+              } @else {
+                Add to Cart
+              }
             }
           </button>
           <button class="cancel-button" (click)="closeModal()" [disabled]="isProcessing()">
             Cancel
           </button>
         </div>
-        
+
         <p class="terms-notice">
           By subscribing, you agree to our <a href="/terms/thortful-plus">Terms & Conditions</a>
         </p>
