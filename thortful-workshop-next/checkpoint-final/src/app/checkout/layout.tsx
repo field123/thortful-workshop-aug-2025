@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PlusBanner from '../components/PlusBanner';
 
-export default function StoreLayout({
+export default function CheckoutLayout({
   children,
 }: {
   children: React.ReactNode;

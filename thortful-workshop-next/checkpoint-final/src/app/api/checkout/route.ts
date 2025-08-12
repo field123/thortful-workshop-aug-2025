@@ -13,6 +13,7 @@ import {cookies} from "next/headers";
 import {ACCOUNT_COOKIE_KEY, CART_COOKIE_KEY, EPCC_ENDPOINT_URL} from "@/app/constants";
 import {temporaryCreateSubscriptionFromOrder} from "@/app/api/checkout/temp-create-subscription-from-order";
 import {redirect} from "next/navigation";
+import {NextResponse} from "next/server";
 
 initializeShopperClient()
 
@@ -273,7 +274,9 @@ export async function POST(request: Request) {
 
     console.log("Created new cart:", createdCart.data);
 
-    cookieStore.set(
+    const res = NextResponse.json({ successUrl: new URL(`/checkout/success/${orderId}`, request.url).toString() }, { status: 200 });
+
+    res.cookies.set(
         CART_COOKIE_KEY,
         createdCart.data?.data?.id!,
         {
@@ -284,9 +287,7 @@ export async function POST(request: Request) {
         }
     );
 
-    redirect("/checkout/success");
-
-    return Response.json({req})
+    return res;
 }
 
 

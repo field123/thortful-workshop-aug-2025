@@ -4,6 +4,7 @@ import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js';
 import './CheckoutForm.css';
 import {useFormState} from "react-dom";
 import {type CartEntityResponse} from "@epcc-sdk/sdks-shopper";
+import {useRouter} from "next/navigation";
 
 const initialState = {
     message: '',
@@ -18,6 +19,7 @@ interface CheckoutFormProps {
 export default function CheckoutForm({ userData, isAuthenticated, cart }: CheckoutFormProps) {
     const stripe = useStripe();
     const elements = useElements();
+    const router = useRouter()
 
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
     const [loading, setLoading] = useState(false);
@@ -155,8 +157,12 @@ export default function CheckoutForm({ userData, isAuthenticated, cart }: Checko
             }),
         });
 
-        const data = await res.json();
-        setLoading(false);
+        if (res.ok) {
+            const { successUrl } = await res.json();
+            router.push(successUrl);
+        } else {
+            setLoading(false);
+        }
     };
 
     return (

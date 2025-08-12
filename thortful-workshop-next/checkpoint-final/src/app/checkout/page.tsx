@@ -3,6 +3,7 @@ import {initializeShopperClient} from "@/lib/epcc-shopper-client";
 import {cookies} from "next/headers";
 import {CART_COOKIE_KEY, ACCOUNT_COOKIE_KEY} from "@/app/constants";
 import {getACart, getV2AccountMembers} from "@epcc-sdk/sdks-shopper";
+import {redirect} from "next/navigation";
 
 initializeShopperClient()
 
@@ -44,6 +45,10 @@ export default async function CheckoutPage() {
 
     if (response.error) {
         throw new Error("Failed to fetch cart");
+    }
+
+    if (!response.data.included?.items || response.data.included.items.length === 0) {
+        redirect("/cart")
     }
 
     // Fetch user data if authenticated
