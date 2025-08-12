@@ -1,12 +1,37 @@
 import {initializeShopperClient} from "@/lib/epcc-shopper-client";
-import {createAnAccessToken, createCartPaymentIntent, getV2AccountMembers, getV2Accounts, checkoutApi} from "@epcc-sdk/sdks-shopper"
+import {
+    createAnAccessToken,
+    createCartPaymentIntent,
+    getV2AccountMembers,
+    getV2Accounts,
+    checkoutApi,
+    confirmOrder,
+    getACart,
+    deleteACart, createACart
+} from "@epcc-sdk/sdks-shopper"
 import {cookies} from "next/headers";
-import {ACCOUNT_COOKIE_KEY, CART_COOKIE_KEY} from "@/app/constants";
+import {ACCOUNT_COOKIE_KEY, CART_COOKIE_KEY, EPCC_ENDPOINT_URL} from "@/app/constants";
+import {temporaryCreateSubscriptionFromOrder} from "@/app/api/checkout/temp-create-subscription-from-order";
+import {redirect} from "next/navigation";
 
 initializeShopperClient()
 
 interface RequestData {
     confirmationTokenId: string;
+    customer?: {
+        email: string;
+        name: string;
+    };
+    billingAddress: {
+        first_name: string;
+        last_name: string;
+        line_1: string;
+        line_2?: string;
+        city: string;
+        region?: string;
+        postcode: string;
+        country: string;
+    };
 }
 
 export async function POST(request: Request) {
@@ -74,7 +99,7 @@ export async function POST(request: Request) {
     /**
      * 1. Set payment intent on cart
       */
-    const result = await createCartPaymentIntent({
+    const paymentResult = await createCartPaymentIntent({
         path: {
             cartID: cartId,
         },
@@ -86,8 +111,8 @@ export async function POST(request: Request) {
                 gateway: "elastic_path_payments_stripe",
                 method: "purchase",
                 options: {
-                    // currency: "gbp",
                     automatic_payment_methods: { enabled: true },
+                    // @ts-expect-error sdk does not have the correct type for this
                     confirm: true,
                     confirmation_token: req.confirmationTokenId,
                     receipt_email: memberData?.email,
@@ -100,8 +125,8 @@ export async function POST(request: Request) {
         }
     })
 
-    console.log("Payment intent request: ", result.request.headers, result.request.body);
-    console.log("Payment intent result:", result.error, result.data);
+    console.log("Payment intent request: ", paymentResult.request.headers, paymentResult.request.body);
+    console.log("Payment intent result:", paymentResult.error, paymentResult.data);
 
     /**
      * 2. Perform checkout to turn cart into order
@@ -121,39 +146,147 @@ export async function POST(request: Request) {
                     name: memberData?.name
                 },
                 billing_address: {
-                    "first_name": "Robert",
-                    "last_name": "Field",
-                    "company_name": "ElasticPath",
-                    "line_1": "1234 Disney Drive",
-                    "line_2": "Disney Resort",
-                    "city": "Anaheim",
-                    "county": "Orange",
-                    "region": "CA",
-                    "postcode": "92802",
-                    "country": "US"
+                    first_name: req.billingAddress.first_name,
+                    last_name: req.billingAddress.last_name,
+                    line_1: req.billingAddress.line_1,
+                    line_2: req.billingAddress.line_2 ?? '',
+                    city: req.billingAddress.city,
+                    region: req.billingAddress.region ?? '',
+                    postcode: req.billingAddress.postcode,
+                    country: req.billingAddress.country,
+                    company_name: "",
+                    county: "",
                 },
                 shipping_address: {
-                    "first_name": "Robert",
-                    "last_name": "Field",
-                    "company_name": "ElasticPath",
-                    "phone_number": "(555) 555-1234",
-                    "line_1": "1234 Disney Drive",
-                    "line_2": "Disney Resort",
-                    "city": "Anaheim",
-                    "county": "Orange",
-                    "region": "CA",
-                    "postcode": "92802",
-                    "country": "US",
-                    "instructions": "Leave in porch"
+                    first_name: req.billingAddress.first_name,
+                    last_name: req.billingAddress.last_name,
+                    line_1: req.billingAddress.line_1,
+                    line_2: req.billingAddress.line_2 ?? '',
+                    city: req.billingAddress.city,
+                    region: req.billingAddress.region ?? '',
+                    postcode: req.billingAddress.postcode,
+                    country: req.billingAddress.country,
+                    company_name: "",
+                    county: "",
+                    phone_number: "",
+                    instructions: ""
                 }
             }
         }
     })
 
-    // 3. Confirm the order paid to sync with Elastic Path Payments
-    // 4 (temporary) manually create subscription from order
-    // 5. clear the cart, should set a new cart cookie
+    console.log("Checkout response:", checkoutResponse.error, checkoutResponse.data);
 
+    if (checkoutResponse.error) {
+        return Response.json({ error: "Failed to checkout" }, { status: 500 });
+    }
+
+    /**
+     * 3. Confirm the order paid to sync with Elastic Path Payments
+      */
+
+    const orderId = checkoutResponse.data.data?.id!;
+    const orderConfirmationResponse = await confirmOrder({
+        path: {
+            orderID: orderId,
+        },
+        // @ts-expect-error the body is not typed correctly in the SDK
+        body: {
+            data: {
+                options: {
+                    metadata: {
+                        order_id: orderId,
+                        "statement_descriptor": "Confirmed intent"
+                    }
+                }
+            }
+        }
+    })
+
+    console.log("Order confirmation response:", orderConfirmationResponse.error, orderConfirmationResponse.data);
+    if (orderConfirmationResponse.error) {
+        return Response.json({ error: "Failed to confirm order" }, { status: 500 });
+    }
+
+    /**
+     * 4 (temporary) manually create subscription from order
+      */
+
+    const cartResponse = await getACart({
+        path: {
+            cartID: cartId,
+        },
+        query: {
+            include: ['items']
+        }
+    })
+
+    if (cartResponse.error) {
+        return Response.json({ error: "Failed to fetch cart" }, { status: 500 });
+    }
+
+    console.log("Payment method id: ", (paymentResult.data as any)?.meta?.payment_intent?.payment_intent?.payment_method?.id)
+
+    const subsCreationResult = await temporaryCreateSubscriptionFromOrder({
+        orderId: orderId,
+        clientCredentialsAccessToken: clientCredentialsToken.data.access_token!,
+        cart: cartResponse.data,
+        accountData: accountData!,
+        stripeCustomerId,
+        memberData: memberData!,
+        paymentMethodId: (paymentResult.data as any)?.meta?.payment_intent?.payment_intent?.payment_method?.id
+    })
+
+
+    /**
+     * 5. clear the cart
+      */
+
+    const deleteCartResponse = await deleteACart({
+        path: {
+            cartID: cartId
+        },
+    })
+
+    if (deleteCartResponse.error) {
+        return Response.json({ error: "Failed to delete cart" }, { status: 500 });
+    }
+
+    console.log("Delete cart response:", deleteCartResponse.error, deleteCartResponse.data);
+
+    /**
+     * 6. set new cart cookie
+     */
+
+    const createdCart = await createACart({
+        baseUrl: EPCC_ENDPOINT_URL,
+        body: {
+            data: {
+                name: "Cart",
+            },
+        },
+    });
+
+    if (createdCart.error) {
+        return Response.json({ error: "Failed to create new cart" }, { status: 500 });
+    }
+
+    console.log("Created new cart:", createdCart.data);
+
+    cookieStore.set(
+        CART_COOKIE_KEY,
+        createdCart.data?.data?.id!,
+        {
+            sameSite: "strict",
+            expires: new Date(
+                (createdCart.data?.data?.meta?.timestamps as any)?.expires_at
+            ),
+        }
+    );
+
+    redirect("/checkout/success");
 
     return Response.json({req})
 }
+
+
