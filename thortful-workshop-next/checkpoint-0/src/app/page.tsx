@@ -11,22 +11,26 @@ export default function Home() {
     {
       href: '/cards/birthday',
       image: 'https://images.thortful.com/card/669a344810eebe054a811c80/669a344810eebe054a811c80_medium.jpg?version=1',
-      title: 'Birthday Cards'
+      title: 'Birthday Cards',
+      showPlaceholder: true
     },
     {
       href: '/cards/anniversary',
       image: 'https://images.thortful.com/card/62cd3f165026790001d8be9f/62cd3f165026790001d8be9f_medium.jpg?version=1',
-      title: 'Anniversary Cards'
+      title: 'Anniversary Cards',
+      showPlaceholder: true
     },
     {
       href: '/card-packs',
       image: 'https://strapi-media.thortful.com/cdn-cgi/image/width=250,format=auto,quality=90/First_Image_Birthday_Pack_9_Cheeky_ab5c6da632.jpg',
-      title: 'Card Packs'
+      title: 'Card Packs',
+      showPlaceholder: false
     },
     {
       href: '/cards/congratulations',
       image: 'https://images.thortful.com/card/643eaf15d982cd2234ed9b2a/643eaf15d982cd2234ed9b2a_medium.jpg?version=1',
-      title: 'Congratulations Cards'
+      title: 'Congratulations Cards',
+      showPlaceholder: true
     }
   ];
 
@@ -110,12 +114,14 @@ export default function Home() {
         <ProductSection
           title="Customer Favourites"
           products={customerFavourites}
+          showPlaceholder={true}
         />
         
         <ProductSection
           title="Birthday by Recipient"
           viewAllLink="/cards/birthday"
           products={birthdayByRecipient}
+          showPlaceholder={true}
         />
         
         <ProductSection
@@ -123,12 +129,14 @@ export default function Home() {
           viewAllLink="/gifts"
           viewAllText="Browse Gift Ideas"
           products={giftingRange}
+          showPlaceholder={false}
         />
         
         <ProductSection
           title="Birthday by Style"
           viewAllLink="/cards/birthday"
           products={birthdayByStyle}
+          showPlaceholder={true}
         />
 
         {/* App promotion banner */}

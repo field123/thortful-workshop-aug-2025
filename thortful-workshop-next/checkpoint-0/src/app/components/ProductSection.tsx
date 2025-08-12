@@ -5,10 +5,12 @@ interface ProductSectionProps {
   title: string;
   viewAllLink?: string;
   viewAllText?: string;
+  showPlaceholder?: boolean;
   products: Array<{
     href: string;
     image: string;
     title: string;
+    showPlaceholder?: boolean;
   }>;
 }
 
@@ -16,6 +18,7 @@ export default function ProductSection({
   title, 
   viewAllLink, 
   viewAllText = "See all cards",
+  showPlaceholder = false,
   products 
 }: ProductSectionProps) {
   return (
@@ -32,13 +35,14 @@ export default function ProductSection({
         )}
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+      <div className="flex flex-wrap gap-x-[15px] gap-y-[20px]">
         {products.map((product, index) => (
           <ProductCard
             key={index}
             href={product.href}
             image={product.image}
             title={product.title}
+            showPlaceholder={product.showPlaceholder !== undefined ? product.showPlaceholder : showPlaceholder}
           />
         ))}
       </div>
