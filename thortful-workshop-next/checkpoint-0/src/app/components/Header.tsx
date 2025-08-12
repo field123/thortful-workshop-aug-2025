@@ -89,41 +89,41 @@ export default function Header() {
       </nav>
 
       {/* Category navigation */}
-      <nav className="bg-[#f5f5f5]" style={{ borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5', height: '39px' }}>
+      <nav className="bg-white" style={{ borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5', height: '39px' }}>
         <div className="max-w-[1200px] mx-auto">
-          <ul className="flex items-center px-[15px]" style={{ height: '39px', lineHeight: '39px' }}>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/cards/birthday" className="hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px' }}>
+          <ul className="flex items-center px-[15px]" style={{ height: '39px' }}>
+            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
+              <Link href="/cards/birthday" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 Birthday
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/cards/anniversary" className="hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px' }}>
+            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
+              <Link href="/cards/anniversary" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 Anniversary
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/cards" className="hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px' }}>
+            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
+              <Link href="/cards" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 Card & Gift
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/personalised-cards" className="hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px' }}>
+            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
+              <Link href="/personalised-cards" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 Personalised Cards
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/cards" className="hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px' }}>
+            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
+              <Link href="/cards" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 All Occasions
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/creators/list" className="hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px' }}>
+            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
+              <Link href="/creators/list" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 Our Creators
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block', lineHeight: '24.96px' }}>
-              <Link href="/refer-a-friend" className="hover:text-[#ef6c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', color: '#f57c00' }}>
+            <li className="ml-auto" style={{ paddingRight: '0', display: 'block' }}>
+              <Link href="/refer-a-friend" className="text-[#f57c00] hover:text-[#ef6c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
                 Get £5 Off
               </Link>
             </li>
