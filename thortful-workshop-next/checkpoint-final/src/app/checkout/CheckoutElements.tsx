@@ -6,7 +6,13 @@ import {type CartEntityResponse} from "@epcc-sdk/sdks-shopper";
 
 const stripePromise = loadStripe('pk_test_qblFNYngBkEdjEZ16jxxoWSM');
 
-export function CheckoutElements({cart}: {cart: CartEntityResponse}) {
+interface CheckoutElementsProps {
+    cart: CartEntityResponse;
+    userData?: any;
+    isAuthenticated: boolean;
+}
+
+export function CheckoutElements({cart, userData, isAuthenticated}: CheckoutElementsProps) {
     const amount = cart.data.meta?.display_price?.with_tax?.amount
     const currency = cart.data.meta?.display_price?.with_tax?.currency
 
@@ -32,7 +38,7 @@ export function CheckoutElements({cart}: {cart: CartEntityResponse}) {
 
     return (
         <Elements stripe={stripePromise} options={options}>
-            <CheckoutForm />
+            <CheckoutForm userData={userData} isAuthenticated={isAuthenticated} cart={cart} />
         </Elements>
     );
 };

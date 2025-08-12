@@ -1,14 +1,21 @@
 "use client";
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js';
 import './CheckoutForm.css';
 import {useFormState} from "react-dom";
+import {type CartEntityResponse} from "@epcc-sdk/sdks-shopper";
 
 const initialState = {
     message: '',
 }
 
-export default function CheckoutForm() {
+interface CheckoutFormProps {
+    userData?: any;
+    isAuthenticated: boolean;
+    cart: CartEntityResponse;
+}
+
+export default function CheckoutForm({ userData, isAuthenticated, cart }: CheckoutFormProps) {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -16,12 +23,12 @@ export default function CheckoutForm() {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         customer: {
-            email: '',
-            name: ''
+            email: userData?.email || '',
+            name: userData?.name || ''
         },
         billingAddress: {
-            first_name: '',
-            last_name: '',
+            first_name: userData?.name?.split(' ')[0] || '',
+            last_name: userData?.name?.split(' ').slice(1).join(' ') || '',
             line_1: '',
             line_2: '',
             city: '',
@@ -56,17 +63,26 @@ export default function CheckoutForm() {
         }
     };
 
+    // Check if cart has subscription items
+    const hasSubscriptionItems = cart.data.relationships?.items?.data?.some((item: any) => {
+        // You may need to check the actual cart items for subscription type
+        return false; // Placeholder - implement based on your cart structure
+    });
+
     const validateForm = () => {
         const errors: any = {};
         
-        if (!formData.customer.email) {
-            errors['customer.email'] = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(formData.customer.email)) {
-            errors['customer.email'] = 'Email is invalid';
-        }
-        
-        if (!formData.customer.name) {
-            errors['customer.name'] = 'Name is required';
+        // Only require email and name if not authenticated and has subscription items
+        if (!isAuthenticated && hasSubscriptionItems) {
+            if (!formData.customer.email) {
+                errors['customer.email'] = 'Email is required for subscription items';
+            } else if (!/\S+@\S+\.\S+/.test(formData.customer.email)) {
+                errors['customer.email'] = 'Email is invalid';
+            }
+            
+            if (!formData.customer.name) {
+                errors['customer.name'] = 'Name is required for subscription items';
+            }
         }
         
         if (!formData.billingAddress.first_name) {
@@ -146,37 +162,53 @@ export default function CheckoutForm() {
     return (
         <form onSubmit={handleSubmit} className="checkout-form">
             <div className="form-sections">
+                {isAuthenticated && (
+                    <div className="logged-in-message">
+                        <p>Logged in as: <strong>{userData?.email}</strong></p>
+                    </div>
+                )}
+                
                 <section className="form-section">
                     <h2>Customer Information</h2>
-                    <div className="form-group">
-                        <label htmlFor="email">Email *</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            value={formData.customer.email}
-                            onChange={(e) => handleInputChange('customer.email', e.target.value)}
-                            className={formErrors['customer.email'] ? 'invalid' : ''}
-                            placeholder="john@example.com"
-                        />
-                        {formErrors['customer.email'] && (
-                            <span className="error-message">{formErrors['customer.email']}</span>
-                        )}
-                    </div>
+                    {(!isAuthenticated || hasSubscriptionItems) && (
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="email">
+                                    Email {!isAuthenticated && hasSubscriptionItems ? '*' : ''}
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    value={formData.customer.email}
+                                    onChange={(e) => handleInputChange('customer.email', e.target.value)}
+                                    className={formErrors['customer.email'] ? 'invalid' : ''}
+                                    placeholder="john@example.com"
+                                    readOnly={isAuthenticated}
+                                />
+                                {formErrors['customer.email'] && (
+                                    <span className="error-message">{formErrors['customer.email']}</span>
+                                )}
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="name">Full Name *</label>
-                        <input 
-                            type="text" 
-                            id="name" 
-                            value={formData.customer.name}
-                            onChange={(e) => handleInputChange('customer.name', e.target.value)}
-                            className={formErrors['customer.name'] ? 'invalid' : ''}
-                            placeholder="John Doe"
-                        />
-                        {formErrors['customer.name'] && (
-                            <span className="error-message">{formErrors['customer.name']}</span>
-                        )}
-                    </div>
+                            <div className="form-group">
+                                <label htmlFor="name">
+                                    Full Name {!isAuthenticated && hasSubscriptionItems ? '*' : ''}
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    value={formData.customer.name}
+                                    onChange={(e) => handleInputChange('customer.name', e.target.value)}
+                                    className={formErrors['customer.name'] ? 'invalid' : ''}
+                                    placeholder="John Doe"
+                                    readOnly={isAuthenticated}
+                                />
+                                {formErrors['customer.name'] && (
+                                    <span className="error-message">{formErrors['customer.name']}</span>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </section>
 
                 <section className="form-section">

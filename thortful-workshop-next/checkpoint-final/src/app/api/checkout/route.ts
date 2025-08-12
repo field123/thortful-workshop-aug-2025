@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     // 2. Perform checkout to turn cart into order
     // 3. Confirm the order paid to sync with Elastic Path Payments
     // 4 (temporary) manually create subscription from order
+    // 5. clear the cart, should set a new cart cookie
 
 
     return Response.json({res})
