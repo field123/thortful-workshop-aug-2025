@@ -4,7 +4,11 @@ import {
   AccessTokenResponse,
   createACart,
 } from "@epcc-sdk/sdks-shopper";
-import { COOKIE_PREFIX_KEY, CREDENTIALS_COOKIE_KEY } from "./app/constants";
+import {
+  CART_COOKIE_KEY,
+  CREDENTIALS_COOKIE_KEY,
+  EPCC_ENDPOINT_URL,
+} from "@/app/constants";
 
 const clientId = process.env.NEXT_PUBLIC_EPCC_CLIENT_ID;
 
@@ -22,12 +26,7 @@ export const config = {
   ],
 };
 
-export async function middleware(
-  req: NextRequest,
-  event: NextFetchEvent,
-  next: NextFetchEvent,
-  context: any
-) {
+export async function middleware(req: NextRequest, event: NextFetchEvent) {
   if (typeof clientId !== "string") {
     console.log("Missing client ID");
     const res = new NextResponse(null, { status: 500 });
@@ -36,77 +35,63 @@ export async function middleware(
   }
 
   const possibleImplicitCookie = req.cookies.get(CREDENTIALS_COOKIE_KEY);
-
   const parsedToken =
     possibleImplicitCookie &&
     (JSON.parse(possibleImplicitCookie.value) as AccessTokenResponse);
 
-  if (parsedToken?.expires && !tokenExpired(parsedToken.expires)) {
-    return NextResponse.next();
+  const possibleCartCookie = req.cookies.get(CART_COOKIE_KEY)?.value;
+
+  // If both cookies are present, we can skip the token creation
+  if (parsedToken && possibleCartCookie) {
+    // If the token is not expired, we can skip the token creation
+    if (
+      possibleCartCookie &&
+      parsedToken &&
+      parsedToken?.expires &&
+      !tokenExpired(parsedToken.expires)
+    ) {
+      return NextResponse.next();
+    }
   }
-
-  const authResponse = await createAnAccessToken({
-    baseUrl: process.env.NEXT_PUBLIC_EPCC_ENDPOINT_URL,
-    body: {
-      grant_type: "implicit",
-      client_id: clientId,
-    },
-  });
-
-  /**
-   * Check response did not fail
-   */
-  if (!authResponse.data) {
-    const res = new NextResponse(null, { status: 500 });
-    res.headers.set("x-error-message", "Failed to get access token");
-    return res;
-  }
-
-  const token = authResponse.data;
 
   const response = NextResponse.next();
+  let resolvedToken = parsedToken;
 
-  response.cookies.set(
-    CREDENTIALS_COOKIE_KEY,
-    JSON.stringify({
-      ...token,
-      client_id: clientId,
-    }),
-    {
-      sameSite: "strict",
-      expires: new Date(token.expires! * 1000),
+  if (!resolvedToken) {
+    const authResponse = await createAnAccessToken({
+      baseUrl: process.env.NEXT_PUBLIC_EPCC_ENDPOINT_URL,
+      body: {
+        grant_type: "implicit",
+        client_id: clientId,
+      },
+    });
+
+    /**
+     * Check response did not fail
+     */
+    if (!authResponse.data) {
+      const res = new NextResponse(null, { status: 500 });
+      res.headers.set("x-error-message", "Failed to get access token");
+      return res;
     }
-  );
+    resolvedToken = authResponse.data;
 
-  /**
-   * Add cart creation middleware here TUTORIAL STEP
-   */
-  if (req.cookies.get(`${COOKIE_PREFIX_KEY}_ep_cart`)) {
-    return response;
+    response.cookies.set(
+      CREDENTIALS_COOKIE_KEY,
+      JSON.stringify({
+        ...resolvedToken,
+        client_id: clientId,
+      }),
+      {
+        sameSite: "strict",
+        expires: new Date(resolvedToken.expires! * 1000),
+      }
+    );
   }
 
-  const createdCart = await createACart({
-    baseUrl: process.env.NEXT_PUBLIC_EPCC_ENDPOINT_URL,
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-    },
-    body: {
-      data: {
-        name: "Cart",
-      },
-    },
-  });
-
-  response.cookies.set(
-    `${COOKIE_PREFIX_KEY}_ep_cart`,
-    createdCart.data?.data?.id!,
-    {
-      sameSite: "strict",
-      expires: new Date(
-        (createdCart.data?.data?.meta?.timestamps as any)?.expires_at
-      ),
-    }
-  );
+  /*
+    TUTORIAL STEP: Insert cart creation logic here.
+  */
 
   return response;
 }

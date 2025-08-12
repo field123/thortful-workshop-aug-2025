@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { fetchCartAction } from "../actions";
+// import { fetchCartAction } from "../actions";
 
 interface CartResult {
   success: boolean;
@@ -22,34 +22,14 @@ export default function CartPage() {
     TUTORIAL STEP: Replace this useEffect with the example from the tutorial
   */
 
-  //   useEffect(() => {
-  //     async function loadCart() {
-  //       setCartResult({
-  //         success: false,
-  //         error: "Failed to load cart",
-  //         cart: null,
-  //       });
-  //       setLoading(false);
-  //     }
-
-  //     loadCart();
-  //   }, []);
-
   useEffect(() => {
     async function loadCart() {
-      try {
-        const result = await fetchCartAction();
-        setCartResult(result);
-      } catch (error) {
-        console.error("Failed to load cart:", error);
-        setCartResult({
-          success: false,
-          error: "Failed to load cart",
-          cart: null,
-        });
-      } finally {
-        setLoading(false);
-      }
+      setCartResult({
+        success: false,
+        error: "Failed to load cart",
+        cart: null,
+      });
+      setLoading(false);
     }
 
     loadCart();

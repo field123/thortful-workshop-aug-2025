@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { addToCartAction } from "../actions";
+// import { addToCartAction } from "../actions";
 
 interface ProductCardProps {
   id?: string;
@@ -28,7 +28,7 @@ export default function ProductCard({
   const [justAdded, setJustAdded] = useState(false);
 
   /*
-    TUTORIAL STEP: Insert add to cart logic here.
+    TUTORIAL STEP: Replace this add to cart function with the example from the tutorial.
   */
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -37,30 +37,8 @@ export default function ProductCard({
 
     if (!id) return;
 
-    setIsAdding(true);
-    try {
-      const result = await addToCartAction(id, 1);
-      if (result.success) {
-        setJustAdded(true);
-        setTimeout(() => setJustAdded(false), 2000);
-      } else {
-        console.error("Failed to add to cart:", result.error);
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    } finally {
-      setIsAdding(false);
-    }
+    alert("Add to cart coming soon!");
   };
-
-  // const handleAddToCart = async (e: React.MouseEvent) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   if (!id) return;
-
-  //   alert("Add to cart coming soon!");
-  // };
 
   return (
     <div className="group">
