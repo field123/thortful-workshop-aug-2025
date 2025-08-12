@@ -93,6 +93,37 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
     TUTORIAL STEP: Insert cart creation logic here.
   */
 
+  // If the cart cookie is not set, we can create a new cart
+  if (!possibleCartCookie) {
+    const createdCart = await createACart({
+      baseUrl: EPCC_ENDPOINT_URL,
+      headers: {
+        Authorization: `Bearer ${resolvedToken.access_token}`,
+      },
+      body: {
+        data: {
+          name: "Cart",
+        },
+      },
+    });
+
+    /**
+     * Check response did not fail
+     */
+    if (!createdCart.data) {
+      const res = new NextResponse(null, { status: 500 });
+      res.headers.set("x-error-message", "Failed to create cart");
+      return res;
+    }
+
+    response.cookies.set(CART_COOKIE_KEY, createdCart.data?.data?.id!, {
+      sameSite: "strict",
+      expires: new Date(
+        (createdCart.data?.data?.meta?.timestamps as any)?.expires_at
+      ),
+    });
+  }
+
   return response;
 }
 
