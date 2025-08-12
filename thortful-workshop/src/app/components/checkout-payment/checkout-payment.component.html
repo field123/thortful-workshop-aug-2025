@@ -43,27 +43,27 @@
         [stripe]="stripeService.stripe"
         [elementsOptions]="elementsOptions"
         (elements)="onElementsReady($event)">
-        
+
         <div class="payment-form-container">
           <h3>Payment Details</h3>
-          <ngx-stripe-payment 
+          <ngx-stripe-payment
             [options]="paymentElementOptions">
           </ngx-stripe-payment>
         </div>
 
         <div class="form-actions">
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="btn btn-secondary"
             (click)="cancel()"
             [disabled]="processing">
             Cancel
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="btn btn-primary"
             (click)="handlePayment()"
-            [disabled]="processing || loading"
+            [disabled]="processing || loading">
             @if (processing) {
               Processing...
             } @else {
