@@ -5,7 +5,9 @@ import { environment } from '../environments/environment';
 
 const browserConfig: ApplicationConfig = {
   providers: [
-    provideNgxStripe(environment.stripe?.publishableKey || 'pk_test_placeholder')
+    provideNgxStripe(environment.stripe?.publishableKey || 'pk_test_placeholder', {
+      stripeAccount: environment.stripe?.connectAccountId!
+    })
   ]
 };
 
