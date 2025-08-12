@@ -21,16 +21,3 @@ body {
   font-family: Roboto, Arial, Helvetica, sans-serif;
 }
 
-@keyframes slide-left {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-slide-left {
-  animation: slide-left 30s linear infinite;
-  display: flex;
-}
