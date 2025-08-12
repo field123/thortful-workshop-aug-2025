@@ -127,6 +127,8 @@ export default function Home() {
         <HeroCarousel />
         <TrustpilotWidget />
 
+        <AuthTest />
+
         <ProductSection
           title="Customer Favourites"
           products={customerFavourites}
