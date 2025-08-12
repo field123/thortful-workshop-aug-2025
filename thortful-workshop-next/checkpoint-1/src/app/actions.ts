@@ -101,8 +101,6 @@ export async function addToCartAction(productId: string, quantity: number = 1) {
   }
 }
 
-// TUTORIAL STEP: Insert fetch product actions here.
-
 export async function fetchProductsAction() {
   try {
     configureClient();

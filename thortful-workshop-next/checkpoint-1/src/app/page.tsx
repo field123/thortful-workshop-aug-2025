@@ -5,7 +5,6 @@ import ProductSection from "./components/ProductSection";
 import Footer from "./components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import AuthTest from "./components/AuthTest";
 import { configureClient } from "../lib/api-client";
 import { fetchProductsAction } from "./actions";
 
@@ -84,8 +83,6 @@ export default async function Home() {
       <main>
         <HeroCarousel />
         <TrustpilotWidget />
-
-        <AuthTest />
 
         {realProducts.length > 0 ? (
           <>
