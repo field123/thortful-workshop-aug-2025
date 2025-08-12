@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import CartDropdown from './CartDropdown';
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,10 +81,7 @@ export default function Header() {
             </button>
           </li>
           <li>
-            <button className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
-              <Image src="/basket-icon.svg" alt="thortful basket icon" width={20} height={20} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>Basket</span>
-            </button>
+            <CartDropdown />
           </li>
         </ul>
       </nav>
