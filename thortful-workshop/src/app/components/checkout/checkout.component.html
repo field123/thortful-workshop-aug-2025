@@ -31,69 +31,19 @@
                 }
               </div>
 
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="firstName">First Name *</label>
-                  <input 
-                    type="text" 
-                    id="firstName" 
-                    formControlName="firstName"
-                    [class.invalid]="isFieldInvalid('customer.firstName')"
-                    placeholder="John">
-                  @if (isFieldInvalid('customer.firstName')) {
-                    <span class="error-message">{{ getFieldError('customer.firstName') }}</span>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="lastName">Last Name *</label>
-                  <input 
-                    type="text" 
-                    id="lastName" 
-                    formControlName="lastName"
-                    [class.invalid]="isFieldInvalid('customer.lastName')"
-                    placeholder="Doe">
-                  @if (isFieldInvalid('customer.lastName')) {
-                    <span class="error-message">{{ getFieldError('customer.lastName') }}</span>
-                  }
-                </div>
+              <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  formControlName="name"
+                  [class.invalid]="isFieldInvalid('customer.name')"
+                  placeholder="John Doe">
+                @if (isFieldInvalid('customer.name')) {
+                  <span class="error-message">{{ getFieldError('customer.name') }}</span>
+                }
               </div>
             </div>
-
-            <!-- Account Creation (for subscriptions) -->
-            @if (requiresAccount) {
-              <div formGroupName="account" class="account-section">
-                <div class="info-box">
-                  <p>Your cart contains a subscription. Please create an account to manage your subscription.</p>
-                </div>
-                
-                <div class="form-group">
-                  <label for="password">Password *</label>
-                  <input 
-                    type="password" 
-                    id="password" 
-                    formControlName="password"
-                    [class.invalid]="isFieldInvalid('account.password')"
-                    placeholder="Minimum 8 characters">
-                  @if (isFieldInvalid('account.password')) {
-                    <span class="error-message">{{ getFieldError('account.password') }}</span>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="confirmPassword">Confirm Password *</label>
-                  <input 
-                    type="password" 
-                    id="confirmPassword" 
-                    formControlName="confirmPassword"
-                    [class.invalid]="isFieldInvalid('account.confirmPassword')"
-                    placeholder="Confirm your password">
-                  @if (isFieldInvalid('account.confirmPassword')) {
-                    <span class="error-message">{{ getFieldError('account.confirmPassword') }}</span>
-                  }
-                </div>
-              </div>
-            }
           </section>
 
           <!-- Billing Address -->
@@ -106,10 +56,10 @@
                   <input 
                     type="text" 
                     id="billingFirstName" 
-                    formControlName="firstName"
-                    [class.invalid]="isFieldInvalid('billingAddress.firstName')">
-                  @if (isFieldInvalid('billingAddress.firstName')) {
-                    <span class="error-message">{{ getFieldError('billingAddress.firstName') }}</span>
+                    formControlName="first_name"
+                    [class.invalid]="isFieldInvalid('billingAddress.first_name')">
+                  @if (isFieldInvalid('billingAddress.first_name')) {
+                    <span class="error-message">{{ getFieldError('billingAddress.first_name') }}</span>
                   }
                 </div>
 
@@ -118,10 +68,10 @@
                   <input 
                     type="text" 
                     id="billingLastName" 
-                    formControlName="lastName"
-                    [class.invalid]="isFieldInvalid('billingAddress.lastName')">
-                  @if (isFieldInvalid('billingAddress.lastName')) {
-                    <span class="error-message">{{ getFieldError('billingAddress.lastName') }}</span>
+                    formControlName="last_name"
+                    [class.invalid]="isFieldInvalid('billingAddress.last_name')">
+                  @if (isFieldInvalid('billingAddress.last_name')) {
+                    <span class="error-message">{{ getFieldError('billingAddress.last_name') }}</span>
                   }
                 </div>
               </div>
@@ -131,11 +81,11 @@
                 <input 
                   type="text" 
                   id="billingLine1" 
-                  formControlName="line1"
-                  [class.invalid]="isFieldInvalid('billingAddress.line1')"
+                  formControlName="line_1"
+                  [class.invalid]="isFieldInvalid('billingAddress.line_1')"
                   placeholder="123 Main St">
-                @if (isFieldInvalid('billingAddress.line1')) {
-                  <span class="error-message">{{ getFieldError('billingAddress.line1') }}</span>
+                @if (isFieldInvalid('billingAddress.line_1')) {
+                  <span class="error-message">{{ getFieldError('billingAddress.line_1') }}</span>
                 }
               </div>
 
@@ -144,7 +94,7 @@
                 <input 
                   type="text" 
                   id="billingLine2" 
-                  formControlName="line2"
+                  formControlName="line_2"
                   placeholder="Apt 4B">
               </div>
 
@@ -198,134 +148,6 @@
               </div>
             </div>
           </section>
-
-          <!-- Shipping Address -->
-          <section class="form-section">
-            <div class="section-header">
-              <h2>Shipping Address</h2>
-              <label class="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  formControlName="sameAsShipping">
-                Same as billing address
-              </label>
-            </div>
-
-            @if (!checkoutForm.get('sameAsShipping')?.value) {
-              <div formGroupName="shippingAddress">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="shippingFirstName">First Name *</label>
-                    <input 
-                      type="text" 
-                      id="shippingFirstName" 
-                      formControlName="firstName"
-                      [class.invalid]="isFieldInvalid('shippingAddress.firstName')">
-                    @if (isFieldInvalid('shippingAddress.firstName')) {
-                      <span class="error-message">{{ getFieldError('shippingAddress.firstName') }}</span>
-                    }
-                  </div>
-
-                  <div class="form-group">
-                    <label for="shippingLastName">Last Name *</label>
-                    <input 
-                      type="text" 
-                      id="shippingLastName" 
-                      formControlName="lastName"
-                      [class.invalid]="isFieldInvalid('shippingAddress.lastName')">
-                    @if (isFieldInvalid('shippingAddress.lastName')) {
-                      <span class="error-message">{{ getFieldError('shippingAddress.lastName') }}</span>
-                    }
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="shippingLine1">Address *</label>
-                  <input 
-                    type="text" 
-                    id="shippingLine1" 
-                    formControlName="line1"
-                    [class.invalid]="isFieldInvalid('shippingAddress.line1')"
-                    placeholder="123 Main St">
-                  @if (isFieldInvalid('shippingAddress.line1')) {
-                    <span class="error-message">{{ getFieldError('shippingAddress.line1') }}</span>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="shippingLine2">Apartment, suite, etc. (optional)</label>
-                  <input 
-                    type="text" 
-                    id="shippingLine2" 
-                    formControlName="line2"
-                    placeholder="Apt 4B">
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="shippingCity">City *</label>
-                    <input 
-                      type="text" 
-                      id="shippingCity" 
-                      formControlName="city"
-                      [class.invalid]="isFieldInvalid('shippingAddress.city')">
-                    @if (isFieldInvalid('shippingAddress.city')) {
-                      <span class="error-message">{{ getFieldError('shippingAddress.city') }}</span>
-                    }
-                  </div>
-
-                  <div class="form-group">
-                    <label for="shippingRegion">State/Province</label>
-                    <input 
-                      type="text" 
-                      id="shippingRegion" 
-                      formControlName="region">
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="shippingPostcode">Postal Code *</label>
-                    <input 
-                      type="text" 
-                      id="shippingPostcode" 
-                      formControlName="postcode"
-                      [class.invalid]="isFieldInvalid('shippingAddress.postcode')">
-                    @if (isFieldInvalid('shippingAddress.postcode')) {
-                      <span class="error-message">{{ getFieldError('shippingAddress.postcode') }}</span>
-                    }
-                  </div>
-
-                  <div class="form-group">
-                    <label for="shippingCountry">Country *</label>
-                    <input 
-                      type="text" 
-                      id="shippingCountry" 
-                      formControlName="country"
-                      [class.invalid]="isFieldInvalid('shippingAddress.country')"
-                      placeholder="US">
-                    @if (isFieldInvalid('shippingAddress.country')) {
-                      <span class="error-message">{{ getFieldError('shippingAddress.country') }}</span>
-                    }
-                  </div>
-                </div>
-              </div>
-            }
-          </section>
-
-
-          <!-- Payment -->
-          <section class="form-section">
-            <h2>Payment</h2>
-            @if (!stripeInitialized) {
-              <div class="payment-loading">Loading payment system...</div>
-            } @else {
-              <div class="payment-info">
-                <p>Payment details will be collected securely when you click "Complete Order".</p>
-                <p class="payment-note">Your card won't be charged until you confirm the order.</p>
-              </div>
-            }
-          </section>
         </div>
 
         <!-- Order Summary -->
@@ -363,7 +185,6 @@
                   <span>{{ totals.discount }}</span>
                 </div>
               }
-
               
               <div class="summary-line">
                 <span>Tax</span>
@@ -382,9 +203,9 @@
             class="btn btn-primary btn-block"
             [disabled]="loading || checkoutForm.invalid">
             @if (loading) {
-              Processing...
+              Creating Order...
             } @else {
-              Complete Order
+              Continue to Payment
             }
           </button>
         </div>

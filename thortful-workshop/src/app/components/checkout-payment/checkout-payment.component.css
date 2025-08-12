@@ -63,15 +63,71 @@
   gap: 2rem;
 }
 
-.payment-element-container {
-  min-height: 300px;
-  padding: 1rem;
+.order-summary-box {
+  background-color: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-#payment-element {
-  min-height: 280px;
+.order-summary-box h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.order-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+.order-detail:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.order-id {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.order-amount {
+  font-weight: 600;
+  color: #111827;
+}
+
+.payment-form-container {
+  margin-bottom: 2rem;
+}
+
+.payment-form-container h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+ngx-stripe-payment-element {
+  display: block;
+  min-height: 250px;
+}
+
+.payment-info {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.payment-info p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.25rem 0;
 }
 
 .form-actions {

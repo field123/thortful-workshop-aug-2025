@@ -1,148 +1,163 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { loadStripe } from '@stripe/stripe-js';
-import { Subject, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import {
+  StripeElementsDirective,
+  StripePaymentElementComponent,
+  NgxStripeModule,
+  StripeService
+} from 'ngx-stripe';
+import {
+  StripeElementsOptions,
+  StripePaymentElementOptions
+} from '@stripe/stripe-js';
+import { CartService } from '../../services/cart.service';
 import { environment } from '../../../environments/environment';
-import { CheckoutService } from '../../services/checkout.service';
 
 @Component({
   selector: 'app-checkout-payment',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgxStripeModule],
   templateUrl: './checkout-payment.component.html',
   styleUrl: './checkout-payment.component.css'
 })
-export class CheckoutPaymentComponent implements OnInit, OnDestroy {
-  private route = inject(ActivatedRoute);
+export class CheckoutPaymentComponent implements OnInit {
+  @ViewChild(StripeElementsDirective) elements!: StripeElementsDirective;
+  @ViewChild(StripePaymentElementComponent) paymentElement!: StripePaymentElementComponent;
+
   private router = inject(Router);
-  private checkoutService = inject(CheckoutService);
-  
-  private destroy$ = new Subject<void>();
-  
-  stripe: any = null;
-  elements: any = null;
-  paymentElement: any = null;
-  
+  private cartService = inject(CartService);
+  stripeService = inject(StripeService);
+
+  elementsOptions: StripeElementsOptions = {
+    locale: 'en'
+  };
+
+  paymentElementOptions: StripePaymentElementOptions = {
+    layout: {
+      type: 'tabs',
+      defaultCollapsed: false,
+      radios: false,
+      spacedAccordionItems: false
+    }
+  };
+
   loading = true;
+  processing = false;
   error: string | null = null;
-  orderId: string | null = null;
-  clientSecret: string | null = null;
-  paymentId: string | null = null;
+  checkoutData: any = null;
+  cartTotal: any = null;
+  stripeElementsInstance: any = null;
 
-  async ngOnInit() {
-    // Get order ID and client secret from query params
-    this.route.queryParams.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(async params => {
-      this.orderId = params['orderId'];
-      this.clientSecret = params['clientSecret'];
-      this.paymentId = params['paymentId'];
-      
-      if (!this.orderId || !this.clientSecret || !this.paymentId) {
-        this.error = 'Invalid payment session';
-        this.loading = false;
-        return;
-      }
-      
-      await this.initializeStripe();
-    });
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-    if (this.paymentElement) {
-      this.paymentElement.destroy();
-    }
-  }
-
-  private async initializeStripe() {
-    try {
-      const stripePublishableKey = environment.stripe?.publishableKey || 'pk_test_51234567890';
-      this.stripe = await loadStripe(stripePublishableKey);
-      
-      if (!this.stripe) {
-        throw new Error('Failed to load Stripe');
-      }
-
-      // Create elements with client secret
-      const elementsOptions: any = {
-        clientSecret: this.clientSecret
-      };
-      
-      // Add Stripe Connect account if configured
-      const stripeAccountId = environment.stripe?.connectAccountId;
-      if (stripeAccountId && stripeAccountId !== 'acct_1234567890') {
-        elementsOptions.stripeAccount = stripeAccountId;
-      }
-      
-      this.elements = this.stripe.elements(elementsOptions);
-      this.paymentElement = this.elements.create('payment', {
-        layout: 'tabs'
-      });
-
-      // Mount payment element
-      setTimeout(() => {
-        const paymentElementContainer = document.getElementById('payment-element');
-        if (paymentElementContainer) {
-          this.paymentElement.mount(paymentElementContainer);
-        }
-        this.loading = false;
-      }, 0);
-    } catch (error) {
-      console.error('Failed to initialize Stripe:', error);
-      this.error = 'Failed to load payment form';
+  ngOnInit() {
+    // Get checkout data from session storage
+    const checkoutDataStr = sessionStorage.getItem('checkoutData');
+    if (!checkoutDataStr) {
+      this.error = 'No checkout data found. Please go back to checkout.';
       this.loading = false;
-    }
-  }
-
-  async handleSubmit() {
-    if (!this.stripe || !this.elements) {
       return;
     }
 
-    this.loading = true;
+    this.checkoutData = JSON.parse(checkoutDataStr);
+
+    // Get cart totals
+    this.cartService.totals$.subscribe(totals => {
+      this.cartTotal = totals;
+      if (totals) {
+        this.initializeStripeElements(totals);
+      }
+    });
+  }
+
+  private initializeStripeElements(totals: any) {
+    // Extract amount from the total string (e.g., "$19.99" -> 1999)
+    const totalAmount = this.extractAmount(totals.total);
+
+    // Update elements options with mode and amount
+    this.elementsOptions = {
+      locale: 'en',
+      mode: 'payment' as const,
+      amount: totalAmount,
+      currency: 'gbp',
+      appearance: {
+        theme: 'stripe' as const
+      }
+    };
+
+    // Add Stripe Connect account if configured
+    const stripeAccountId = environment.stripe?.connectAccountId;
+    if (stripeAccountId && stripeAccountId !== 'acct_1234567890') {
+      (this.elementsOptions as any).stripeAccount = stripeAccountId;
+    }
+
+    this.loading = false;
+  }
+
+  private extractAmount(formattedPrice: string): number {
+    // Remove currency symbol and convert to cents
+    const price = formattedPrice.replace(/[^0-9.]/g, '');
+    return Math.round(parseFloat(price) * 100);
+  }
+
+  onElementsReady(elements: any) {
+    console.log('Stripe Elements ready:', elements);
+    this.stripeElementsInstance = elements;
+  }
+
+  async handlePayment() {
+    if (!this.stripeElementsInstance) {
+      this.error = 'Payment form not initialized';
+      return;
+    }
+
+    this.processing = true;
     this.error = null;
 
     try {
-      // Submit the payment to Stripe
-      const { error, paymentIntent } = await this.stripe.confirmPayment({
-        elements: this.elements,
-        redirect: 'if_required'
+      // Step 1: Submit the elements to validate
+      const submitResult = await this.stripeElementsInstance.submit();
+      if (submitResult?.error) {
+        throw new Error(submitResult.error.message || 'Submit failed');
+      }
+
+      // Step 2: Create confirmation token using the Stripe instance and elements
+      const stripe = this.stripeService.getInstance();
+      if (!stripe) {
+        throw new Error('Stripe not initialized');
+      }
+
+      const tokenResult = await stripe.createConfirmationToken({
+        elements: this.stripeElementsInstance
       });
 
-      if (error) {
-        // Show error to customer
-        this.error = error.message || 'Payment failed';
-        this.loading = false;
-        return;
+      if (tokenResult.error) {
+        throw new Error(tokenResult.error.message || 'Token creation failed');
       }
 
-      // Payment succeeded with Stripe, now confirm with Elastic Path
-      if (paymentIntent && paymentIntent.status === 'succeeded') {
-        try {
-          await this.checkoutService.confirmElasticPathPayment(this.orderId!, this.paymentId!);
-          
-          // Clear cart and redirect to success
-          localStorage.removeItem('ep_cart_id');
-          await this.router.navigate(['/checkout/success'], {
-            queryParams: { orderId: this.orderId }
-          });
-        } catch (epError: any) {
-          console.error('Failed to confirm payment with Elastic Path:', epError);
-          this.error = 'Payment processed but order confirmation failed. Please contact support.';
-          this.loading = false;
-        }
-      } else {
-        // Payment requires additional action
-        this.error = 'Payment requires additional verification';
-        this.loading = false;
+      const confirmationToken = tokenResult.confirmationToken;
+
+      if (!confirmationToken) {
+        throw new Error('Failed to create payment token');
       }
+
+      // Step 3: Log the confirmation token
+      console.log('=== Confirmation Token Created ===');
+      console.log('Token ID:', confirmationToken.id);
+      console.log('Token Object:', confirmationToken);
+      console.log('Checkout Data:', this.checkoutData);
+      console.log('Cart Total:', this.cartTotal);
+      console.log('=================================');
+
+      // Show success message
+      this.processing = false;
+      this.error = null;
+
+      alert(`Confirmation token created successfully!\n\nToken ID: ${confirmationToken.id}\n\nCheck the console for full details.\n\nIn a real implementation, you would now:\n1. Send this token to your backend\n2. Create the order with Elastic Path\n3. Process the payment`);
+
     } catch (error: any) {
       console.error('Payment error:', error);
-      this.error = 'An unexpected error occurred';
-      this.loading = false;
+      this.error = error.message || 'Payment failed';
+      this.processing = false;
     }
   }
 
