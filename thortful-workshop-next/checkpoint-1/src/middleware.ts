@@ -2,8 +2,9 @@ import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import {
   createAnAccessToken,
   AccessTokenResponse,
+  createACart,
 } from "@epcc-sdk/sdks-shopper";
-import { CREDENTIALS_COOKIE_KEY } from "./app/constants";
+import { COOKIE_PREFIX_KEY, CREDENTIALS_COOKIE_KEY } from "./app/constants";
 
 const clientId = process.env.NEXT_PUBLIC_EPCC_CLIENT_ID;
 
@@ -21,7 +22,12 @@ export const config = {
   ],
 };
 
-export async function middleware(req: NextRequest, event: NextFetchEvent) {
+export async function middleware(
+  req: NextRequest,
+  event: NextFetchEvent,
+  next: NextFetchEvent,
+  context: any
+) {
   if (typeof clientId !== "string") {
     console.log("Missing client ID");
     const res = new NextResponse(null, { status: 500 });
@@ -69,6 +75,36 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
     {
       sameSite: "strict",
       expires: new Date(token.expires! * 1000),
+    }
+  );
+
+  /**
+   * Add cart creation middleware here TUTORIAL STEP
+   */
+  if (req.cookies.get(`${COOKIE_PREFIX_KEY}_ep_cart`)) {
+    return response;
+  }
+
+  const createdCart = await createACart({
+    baseUrl: process.env.NEXT_PUBLIC_EPCC_ENDPOINT_URL,
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+    },
+    body: {
+      data: {
+        name: "Cart",
+      },
+    },
+  });
+
+  response.cookies.set(
+    `${COOKIE_PREFIX_KEY}_ep_cart`,
+    createdCart.data?.data?.id!,
+    {
+      sameSite: "strict",
+      expires: new Date(
+        (createdCart.data?.data?.meta?.timestamps as any)?.expires_at
+      ),
     }
   );
 
