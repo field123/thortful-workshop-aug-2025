@@ -7,11 +7,50 @@ import Image from "next/image";
 import Link from "next/link";
 import AuthTest from "./components/AuthTest";
 import { configureClient } from "../lib/api-client";
+import { fetchProductsAction } from "./actions";
 
 configureClient();
 
-export default function Home() {
-  const customerFavourites = [
+export default async function Home() {
+  // Fetch real products from Elastic Path
+  const productsResult = await fetchProductsAction();
+  const realProducts = productsResult.success ? productsResult.products : [];
+
+  // Create sections from real products
+  const customerFavourites = realProducts.slice(0, 4).map((product) => ({
+    id: product.id,
+    href: `/products/${product.id}`,
+    image: product.imageUrl,
+    title: product.name,
+    price: product.price,
+  }));
+
+  const birthdayByRecipient = realProducts.slice(4, 8).map((product) => ({
+    id: product.id,
+    href: `/products/${product.id}`,
+    image: product.imageUrl,
+    title: product.name,
+    price: product.price,
+  }));
+
+  const giftingRange = realProducts.slice(8, 12).map((product) => ({
+    id: product.id,
+    href: `/products/${product.id}`,
+    image: product.imageUrl,
+    title: product.name,
+    price: product.price,
+  }));
+
+  const birthdayByStyle = realProducts.slice(12, 16).map((product) => ({
+    id: product.id,
+    href: `/products/${product.id}`,
+    image: product.imageUrl,
+    title: product.name,
+    price: product.price,
+  }));
+
+  // Fallback demo data if no real products
+  const fallbackProducts = [
     {
       href: "/cards/birthday",
       image:
@@ -38,87 +77,6 @@ export default function Home() {
     },
   ];
 
-  const birthdayByRecipient = [
-    {
-      href: "/cards/birthday/female",
-      image:
-        "https://images.thortful.com/card/664c6f49d799b553d03b1ad2/664c6f49d799b553d03b1ad2_medium.jpg?version=1",
-      title: "Cards For Her",
-    },
-    {
-      href: "/cards/birthday/male",
-      image:
-        "https://images.thortful.com/card/67e27d389ff08444982f3e53/67e27d389ff08444982f3e53_medium.jpg?version=1",
-      title: "Cards For Him",
-    },
-    {
-      href: "/cards/birthday/child",
-      image:
-        "https://images.thortful.com/card/672cb8430171cf52dfa87d87/672cb8430171cf52dfa87d87_medium.jpg?version=1",
-      title: "Cards For Kids",
-    },
-    {
-      href: "/cards/birthday/friend",
-      image:
-        "https://images.thortful.com/card/6033ed8a0c0d4e0001ff8926/6033ed8a0c0d4e0001ff8926_medium.jpg?version=1",
-      title: "Cards For Friend",
-    },
-  ];
-
-  const giftingRange = [
-    {
-      href: "/gifts?c=birthday&occasion=birthday",
-      image:
-        "https://strapi-media.thortful.com/cdn-cgi/image/width=250,format=auto,quality=90/Birthday_Badge_2_dbd804b1a6.jpg",
-      title: "Birthday gifts",
-    },
-    {
-      href: "/gifts?c=our-tonys-chocolonely-gifts&occasion=Birthday",
-      image:
-        "https://strapi-media.thortful.com/cdn-cgi/image/width=250,format=auto,quality=90/Tony_s_Homepage_7df590321d.jpg",
-      title: "Tony's Chocolonely",
-    },
-    {
-      href: "/gifts?c=flower-and-plants&occasion=Birthday",
-      image:
-        "https://strapi-media.thortful.com/cdn-cgi/image/width=250,format=auto,quality=90/Flowers_HP_Image_e768e4e595.jpg",
-      title: "Flowers and Plants",
-    },
-    {
-      href: "/gifts?c=wedding-and-engagement-gifts&occasion=wedding",
-      image:
-        "https://strapi-media.thortful.com/cdn-cgi/image/width=250,format=auto,quality=90/Prosecco_and_Box_3_5715aab1c4.jpg",
-      title: "Wedding Gifts",
-    },
-  ];
-
-  const birthdayByStyle = [
-    {
-      href: "/cards/birthday/funny",
-      image:
-        "https://images.thortful.com/card/62cc6e5626b5d40001e0db42/62cc6e5626b5d40001e0db42_medium.jpg?version=1",
-      title: "Funny Cards",
-    },
-    {
-      href: "/cards/birthday/rude",
-      image:
-        "https://images.thortful.com/card/5f9ae0da8849800001bf06f4/5f9ae0da8849800001bf06f4_medium.jpg?version=1",
-      title: "Rude Cards",
-    },
-    {
-      href: "/cards/birthday/cute",
-      image:
-        "https://images.thortful.com/card/660e8903d799b553d03afcd8/660e8903d799b553d03afcd8_medium.jpg?version=1",
-      title: "Cute Cards",
-    },
-    {
-      href: "/personalised-photo-cards/birthday",
-      image:
-        "https://images.thortful.com/card/65d76bcb3887ad144558f385/65d76bcb3887ad144558f385_medium.jpg?version=1",
-      title: "Photo Cards",
-    },
-  ];
-
   return (
     <>
       <Header />
@@ -129,29 +87,49 @@ export default function Home() {
 
         <AuthTest />
 
-        <ProductSection
-          title="Customer Favourites"
-          products={customerFavourites}
-        />
+        {realProducts.length > 0 ? (
+          <>
+            <ProductSection
+              title="Customer Favourites"
+              products={customerFavourites}
+              showAddToCart={true}
+            />
 
-        <ProductSection
-          title="Birthday by Recipient"
-          viewAllLink="/cards/birthday"
-          products={birthdayByRecipient}
-        />
+            {birthdayByRecipient.length > 0 && (
+              <ProductSection
+                title="Birthday by Recipient"
+                viewAllLink="/cards/birthday"
+                products={birthdayByRecipient}
+                showAddToCart={true}
+              />
+            )}
 
-        <ProductSection
-          title="Shop Our Gifting Range"
-          viewAllLink="/gifts"
-          viewAllText="Browse Gift Ideas"
-          products={giftingRange}
-        />
+            {giftingRange.length > 0 && (
+              <ProductSection
+                title="Shop Our Gifting Range"
+                viewAllLink="/gifts"
+                viewAllText="Browse Gift Ideas"
+                products={giftingRange}
+                showAddToCart={true}
+              />
+            )}
 
-        <ProductSection
-          title="Birthday by Style"
-          viewAllLink="/cards/birthday"
-          products={birthdayByStyle}
-        />
+            {birthdayByStyle.length > 0 && (
+              <ProductSection
+                title="Birthday by Style"
+                viewAllLink="/cards/birthday"
+                products={birthdayByStyle}
+                showAddToCart={true}
+              />
+            )}
+          </>
+        ) : (
+          <ProductSection
+            title="Customer Favourites"
+            products={fallbackProducts}
+            showAddToCart={false}
+          />
+        )}
 
         {/* App promotion banner */}
         <section className="bg-[#f5f5f5] py-6">
