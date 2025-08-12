@@ -68,6 +68,8 @@ export function initializeShopperClient() {
     client.interceptors.request.use(async (request) => {
         const cookieValue = await getAccountCookie(ACCOUNT_MEMBER_TOKEN_COOKIE_KEY)
 
+        console.log(`inside interceptor, cookieValue ${request.url}:`, cookieValue)
+
         // Next.js cookieStore.delete replaces a cookie with an empty string so we need to check for that here.
         if (!cookieValue) {
             return request

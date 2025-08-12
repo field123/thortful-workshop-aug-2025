@@ -4,7 +4,7 @@ import { postV2AccountMembersTokens } from "@epcc-sdk/sdks-shopper"
 import {initializeShopperClient} from "@/lib/epcc-shopper-client";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
-import {ACCOUNT_COOKIE_KEY, COOKIE_PREFIX_KEY} from "@/app/constants";
+import {ACCOUNT_MEMBER_TOKEN_COOKIE_KEY} from "@/app/constants";
 
 const passwordProfileId = process.env.PASSWORD_PROFILE_ID
 
@@ -49,7 +49,7 @@ export async function loginUser(redirectUrl: string | null, prevState: any, form
         console.log("Login response:", response.data.data);
 
         // set the token on a cookie
-        const token = response.data?.data?.[0].token
+        const token = response.data?.data?.[0]
         const expires = response.data?.data?.[0].expires
         if (!token || !expires) {
             return {
@@ -59,11 +59,18 @@ export async function loginUser(redirectUrl: string | null, prevState: any, form
 
         const cookieStore = await cookies();
 
-        console.log("epxires:", expires);
-
         cookieStore.set({
-            name: ACCOUNT_COOKIE_KEY,
-            value: token,
+            name: ACCOUNT_MEMBER_TOKEN_COOKIE_KEY,
+            value: JSON.stringify({
+                accounts: response.data?.data?.reduce((acc, item) => {
+                    return {
+                        ...acc,
+                        [item.account_id!]: item
+                    }
+                }, {}),
+                selected: token.account_id,
+                accountMemberId: response.data.meta?.account_member_id
+            }),
             httpOnly: true,
             // @ts-ignore expires is typed incorrectly in the SDK it's infact an ISO8601 string
             expires: new Date(expires * 1000), // Convert seconds to milliseconds

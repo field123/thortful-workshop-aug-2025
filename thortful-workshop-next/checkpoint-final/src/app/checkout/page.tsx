@@ -1,7 +1,7 @@
 import {CheckoutElements} from "@/app/checkout/CheckoutElements";
 import {initializeShopperClient} from "@/lib/epcc-shopper-client";
 import {cookies} from "next/headers";
-import {CART_COOKIE_KEY, ACCOUNT_COOKIE_KEY} from "@/app/constants";
+import {CART_COOKIE_KEY, ACCOUNT_MEMBER_TOKEN_COOKIE_KEY} from "@/app/constants";
 import {getACart, getV2AccountMembers} from "@epcc-sdk/sdks-shopper";
 import {redirect} from "next/navigation";
 
@@ -30,7 +30,7 @@ async function getUserData(token: string) {
 export default async function CheckoutPage() {
     const cookieStore = await cookies();
     const cartId = cookieStore.get(CART_COOKIE_KEY)?.value;
-    const authToken = cookieStore.get(ACCOUNT_COOKIE_KEY)?.value;
+    const authToken = cookieStore.get(ACCOUNT_MEMBER_TOKEN_COOKIE_KEY)?.value;
 
     if (!cartId) {
         throw new Error("No cart found");

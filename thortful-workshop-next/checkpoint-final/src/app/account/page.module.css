@@ -1,0 +1,251 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    color: #212121;
+}
+
+.sections {
+    display: grid;
+    gap: 40px;
+}
+
+.section {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    color: #212121;
+}
+
+/* Account Details */
+.detailsCard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detailRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detailRow:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 500;
+    color: #666;
+}
+
+.value {
+    color: #212121;
+}
+
+/* Subscriptions */
+.subscriptionsGrid {
+    display: grid;
+    gap: 20px;
+}
+
+.subscriptionCard {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 24px;
+    transition: box-shadow 0.2s ease;
+}
+
+.subscriptionCard:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.subscriptionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.subscriptionName {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #212121;
+    margin: 0;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status.inactive {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.subscriptionDetails {
+    margin-bottom: 20px;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f57c00;
+    margin: 0 0 8px 0;
+}
+
+.nextBilling {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 0;
+}
+
+.description {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: rgba(245, 124, 0, 0.05);
+    border-radius: 6px;
+}
+
+.description p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.benefits {
+    margin-bottom: 20px;
+}
+
+.benefitsTitle {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: #212121;
+}
+
+.benefitsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.benefitsList li {
+    padding: 8px 0;
+    padding-left: 24px;
+    position: relative;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.benefitsList li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.manageButton {
+    width: 100%;
+    padding: 12px 24px;
+    background-color: #f57c00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manageButton:hover {
+    background-color: #ef6c00;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+/* No Subscriptions */
+.noSubscriptions {
+    text-align: center;
+    padding: 40px;
+}
+
+.noSubscriptions p {
+    font-size: 1.125rem;
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.exploreButton {
+    display: inline-block;
+    padding: 14px 32px;
+    background-color: #f57c00;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exploreButton:hover {
+    background-color: #ef6c00;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .detailRow {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .subscriptionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

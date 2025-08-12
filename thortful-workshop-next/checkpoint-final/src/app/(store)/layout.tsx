@@ -1,4 +1,4 @@
-import Header from '../components/Header';
+import HeaderWrapper from '../components/HeaderWrapper';
 import Footer from '../components/Footer';
 import PlusBanner from '../components/PlusBanner';
 
@@ -9,7 +9,7 @@ export default function StoreLayout({
 }) {
   return (
     <>
-      <Header />
+      <HeaderWrapper />
       <PlusBanner />
       {children}
       <Footer />

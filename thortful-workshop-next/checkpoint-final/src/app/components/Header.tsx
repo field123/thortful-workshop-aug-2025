@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { useState } from 'react';
 import CartDropdown from './CartDropdown';
 
-export default function Header() {
+interface HeaderProps {
+  isAuthenticated?: boolean;
+}
+
+export default function Header({ isAuthenticated = false }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchPlaceholder] = useState('Birthday card for a Gemini');
 
@@ -63,9 +67,14 @@ export default function Header() {
         {/* Right navigation */}
         <ul className="flex items-center gap-0">
           <li>
-            <Link href="/login" className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
-              <Image src="/user-icon.svg" alt="thortful sign in icon" width={20} height={20} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>Sign in</span>
+            <Link 
+              href={isAuthenticated ? "/account" : "/login"} 
+              className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors"
+            >
+              <Image src="/user-icon.svg" alt="thortful account icon" width={20} height={20} />
+              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>
+                {isAuthenticated ? 'Account' : 'Sign in'}
+              </span>
             </Link>
           </li>
           <li>

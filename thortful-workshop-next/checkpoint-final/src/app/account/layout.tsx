@@ -2,7 +2,7 @@ import HeaderWrapper from '../components/HeaderWrapper';
 import Footer from '../components/Footer';
 import PlusBanner from '../components/PlusBanner';
 
-export default function CheckoutLayout({
+export default function AccountLayout({
   children,
 }: {
   children: React.ReactNode;

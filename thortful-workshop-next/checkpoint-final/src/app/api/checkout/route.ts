@@ -10,9 +10,8 @@ import {
     deleteACart, createACart
 } from "@epcc-sdk/sdks-shopper"
 import {cookies} from "next/headers";
-import {ACCOUNT_COOKIE_KEY, CART_COOKIE_KEY, EPCC_ENDPOINT_URL} from "@/app/constants";
+import {ACCOUNT_MEMBER_TOKEN_COOKIE_KEY, CART_COOKIE_KEY, EPCC_ENDPOINT_URL} from "@/app/constants";
 import {temporaryCreateSubscriptionFromOrder} from "@/app/api/checkout/temp-create-subscription-from-order";
-import {redirect} from "next/navigation";
 import {NextResponse} from "next/server";
 
 initializeShopperClient()
@@ -45,7 +44,7 @@ export async function POST(request: Request) {
     if (!cartId) {
         return Response.json({ error: "No cart found" }, { status: 400 });
     }
-    const accountToken = cookieStore.get(ACCOUNT_COOKIE_KEY)?.value;
+    const accountToken = cookieStore.get(ACCOUNT_MEMBER_TOKEN_COOKIE_KEY)?.value;
     if (!accountToken) {
         return Response.json({ error: "No account token found" }, { status: 401 });
     }
