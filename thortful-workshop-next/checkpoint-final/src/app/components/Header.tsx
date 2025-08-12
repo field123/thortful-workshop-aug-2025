@@ -63,10 +63,10 @@ export default function Header() {
         {/* Right navigation */}
         <ul className="flex items-center gap-0">
           <li>
-            <button className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
+            <Link href="/login" className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
               <Image src="/user-icon.svg" alt="thortful sign in icon" width={20} height={20} />
               <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>Sign in</span>
-            </button>
+            </Link>
           </li>
           <li>
             <Link href="#" className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
