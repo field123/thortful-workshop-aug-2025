@@ -3,6 +3,7 @@
 .env
 data
 .env.local
+
 .DS_Store
 
 scripts
