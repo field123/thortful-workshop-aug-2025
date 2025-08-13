@@ -6,6 +6,8 @@ import {initializeShopperClient} from "@/lib/epcc-shopper-client";
 initializeShopperClient()
 const OFFERING_ID = '5bae1137-59c7-409a-87d6-72023fa22b17';
 
+export const dynamic = 'force-dynamic';
+
 async function fetchOffering() {
   try {
     const response = await getOffering({

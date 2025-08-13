@@ -4,13 +4,14 @@ import { useActionState } from 'react';
 import { registerUser } from './actions';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import './register.css';
 
 const initialState = {
     message: '',
 };
 
-export default function RegisterPage() {
+function RegisterForm() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get('redirectUrl');
     
@@ -82,5 +83,13 @@ export default function RegisterPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RegisterForm />
+        </Suspense>
     );
 }
