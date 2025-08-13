@@ -21,7 +21,7 @@ export default async function CheckoutSuccessPage({
                 <p className={styles.message}>
                     Thank you for your purchase.
                 </p>
-                <Link href="/plus" className={styles.button}>
+                <Link href="/account" className={styles.button}>
                     Manage Subscriptions
                 </Link>
             </div>
