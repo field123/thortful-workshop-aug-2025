@@ -4,6 +4,7 @@ import { ACCOUNT_MEMBER_TOKEN_COOKIE_KEY } from "@/app/constants";
 import { getV2AccountMembers, getV2Accounts, listSubscriptions } from "@epcc-sdk/sdks-shopper";
 import { initializeShopperClient } from "@/lib/epcc-shopper-client";
 import CancelSubscriptionButton from "./CancelSubscriptionButton";
+import SignOutButton from "./SignOutButton";
 import styles from "./page.module.css";
 
 initializeShopperClient();
@@ -96,7 +97,10 @@ export default async function AccountPage() {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>My Account</h1>
+            <div className={styles.header}>
+                <h1 className={styles.title}>My Account</h1>
+                <SignOutButton />
+            </div>
             
             <div className={styles.sections}>
                 {/* Account Details Section */}
