@@ -31,6 +31,11 @@ export function initializeShopperClient() {
             cookieValue = getCookieValue(CREDENTIALS_COOKIE_KEY)
         }
 
+        if (request.headers.get("Authorization")) {
+            console.debug("Already has Authorization header set, skipping cookie check")
+            return request
+        }
+
         let bearerToken: string | null = null
         if (cookieValue) {
             try {

@@ -10,9 +10,10 @@ const passwordProfileId = process.env.PASSWORD_PROFILE_ID
 
 initializeShopperClient()
 
-export async function loginUser(redirectUrl: string | null, prevState: any, formData: FormData) {
+export async function registerUser(redirectUrl: string | null, prevState: any, formData: FormData) {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const name = formData.get('name') as string;
     if (!email || !password) {
         return {
             message: 'Email and password are required'
@@ -31,10 +32,12 @@ export async function loginUser(redirectUrl: string | null, prevState: any, form
             body: {
                 data: {
                     type: "account_management_authentication_token",
-                    authentication_mechanism: "password",
+                    authentication_mechanism: "self_signup",
                     password_profile_id: passwordProfileId,
                     username: email,
-                    password
+                    password,
+                    name,
+                    email
                 }
             }
         })
@@ -42,11 +45,15 @@ export async function loginUser(redirectUrl: string | null, prevState: any, form
         if (response.error) {
             console.error(response.error);
             return {
-                message: 'Invalid email or password'
+                message: 'There was an error creating your account. Please try again.'
             };
         }
 
-        // set the token on a cookie
+        /**
+         * TODO Need to create a stripe customer here
+         */
+
+            // set the token on a cookie
         const token = response.data?.data?.[0]
         const expires = response.data?.data?.[0].expires
         if (!token || !expires) {

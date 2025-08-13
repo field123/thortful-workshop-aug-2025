@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { useState } from 'react';
 import CartDropdown from './CartDropdown';
 
-export default function Header() {
+interface HeaderProps {
+  isAuthenticated?: boolean;
+}
+
+export default function Header({ isAuthenticated = false }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchPlaceholder] = useState('Birthday card for a Gemini');
 
@@ -54,18 +58,23 @@ export default function Header() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-[30px] border-2 border-transparent focus:border-[#f57c00] focus:outline-none
-                     focus:bg-white transition-all"
-            style={{ height: '50px', backgroundColor: 'rgb(241, 241, 242)', fontSize: '16px', paddingLeft: '50px', paddingRight: '50px', caretColor: '#f57c00' }}
+            className="w-full rounded-[30px] border-2 border-[#e5e5e5] hover:border-[#d0d0d0] focus:border-[#f57c00] focus:outline-none
+                     bg-[#fafafa] hover:bg-[#f5f5f5] focus:bg-white transition-all duration-200"
+            style={{ height: '50px', fontSize: '16px', paddingLeft: '50px', paddingRight: '50px', caretColor: '#f57c00' }}
           />
         </div>
 
         {/* Right navigation */}
         <ul className="flex items-center gap-0">
           <li>
-            <Link href="/login" className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
-              <Image src="/user-icon.svg" alt="thortful sign in icon" width={20} height={20} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>Sign in</span>
+            <Link 
+              href={isAuthenticated ? "/account" : "/login"} 
+              className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors"
+            >
+              <Image src="/user-icon.svg" alt="thortful account icon" width={20} height={20} />
+              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>
+                {isAuthenticated ? 'Account' : 'Sign in'}
+              </span>
             </Link>
           </li>
           <li>
