@@ -1,6 +1,6 @@
 "use client";
 import React, {useState, useEffect} from 'react';
-import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js';
+import {useStripe, useElements, PaymentElement, AddressElement} from '@stripe/react-stripe-js';
 import './CheckoutForm.css';
 import {useFormState} from "react-dom";
 import {type CartEntityResponse} from "@epcc-sdk/sdks-shopper";
@@ -87,29 +87,7 @@ export default function CheckoutForm({ userData, isAuthenticated, cart }: Checko
             }
         }
         
-        if (!formData.billingAddress.first_name) {
-            errors['billingAddress.first_name'] = 'First name is required';
-        }
-        
-        if (!formData.billingAddress.last_name) {
-            errors['billingAddress.last_name'] = 'Last name is required';
-        }
-        
-        if (!formData.billingAddress.line_1) {
-            errors['billingAddress.line_1'] = 'Address is required';
-        }
-        
-        if (!formData.billingAddress.city) {
-            errors['billingAddress.city'] = 'City is required';
-        }
-        
-        if (!formData.billingAddress.postcode) {
-            errors['billingAddress.postcode'] = 'Postal code is required';
-        }
-        
-        if (!formData.billingAddress.country) {
-            errors['billingAddress.country'] = 'Country is required';
-        }
+        // Address validation is now handled by Stripe AddressElement
         
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -147,6 +125,24 @@ export default function CheckoutForm({ userData, isAuthenticated, cart }: Checko
             return;
         }
 
+        // Extract billing address from Stripe Elements
+        const addressElement = elements.getElement('address');
+        if (addressElement) {
+            const {complete, value} = await addressElement.getValue();
+            if (complete && value) {
+                formData.billingAddress = {
+                    first_name: value.firstName || formData.billingAddress.first_name,
+                    last_name: value.lastName || formData.billingAddress.last_name,
+                    line_1: value.address.line1 || '',
+                    line_2: value.address.line2 || '',
+                    city: value.address.city || '',
+                    region: value.address.state || '',
+                    postcode: value.address.postal_code || '',
+                    country: value.address.country || ''
+                };
+            }
+        }
+
         const res = await fetch("/api/checkout", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -176,118 +172,26 @@ export default function CheckoutForm({ userData, isAuthenticated, cart }: Checko
 
                 <section className="form-section">
                     <h2>Billing Address</h2>
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="billingFirstName">First Name *</label>
-                            <input 
-                                type="text" 
-                                id="billingFirstName" 
-                                value={formData.billingAddress.first_name}
-                                onChange={(e) => handleInputChange('billingAddress.first_name', e.target.value)}
-                                className={formErrors['billingAddress.first_name'] ? 'invalid' : ''}
-                            />
-                            {formErrors['billingAddress.first_name'] && (
-                                <span className="error-message">{formErrors['billingAddress.first_name']}</span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="billingLastName">Last Name *</label>
-                            <input 
-                                type="text" 
-                                id="billingLastName" 
-                                value={formData.billingAddress.last_name}
-                                onChange={(e) => handleInputChange('billingAddress.last_name', e.target.value)}
-                                className={formErrors['billingAddress.last_name'] ? 'invalid' : ''}
-                            />
-                            {formErrors['billingAddress.last_name'] && (
-                                <span className="error-message">{formErrors['billingAddress.last_name']}</span>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="billingLine1">Address *</label>
-                        <input 
-                            type="text" 
-                            id="billingLine1" 
-                            value={formData.billingAddress.line_1}
-                            onChange={(e) => handleInputChange('billingAddress.line_1', e.target.value)}
-                            className={formErrors['billingAddress.line_1'] ? 'invalid' : ''}
-                            placeholder="123 Main St"
-                        />
-                        {formErrors['billingAddress.line_1'] && (
-                            <span className="error-message">{formErrors['billingAddress.line_1']}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="billingLine2">Apartment, suite, etc. (optional)</label>
-                        <input 
-                            type="text" 
-                            id="billingLine2" 
-                            value={formData.billingAddress.line_2}
-                            onChange={(e) => handleInputChange('billingAddress.line_2', e.target.value)}
-                            placeholder="Apt 4B"
-                        />
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="billingCity">City *</label>
-                            <input 
-                                type="text" 
-                                id="billingCity" 
-                                value={formData.billingAddress.city}
-                                onChange={(e) => handleInputChange('billingAddress.city', e.target.value)}
-                                className={formErrors['billingAddress.city'] ? 'invalid' : ''}
-                            />
-                            {formErrors['billingAddress.city'] && (
-                                <span className="error-message">{formErrors['billingAddress.city']}</span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="billingRegion">State/Province</label>
-                            <input 
-                                type="text" 
-                                id="billingRegion" 
-                                value={formData.billingAddress.region}
-                                onChange={(e) => handleInputChange('billingAddress.region', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="billingPostcode">Postal Code *</label>
-                            <input 
-                                type="text" 
-                                id="billingPostcode" 
-                                value={formData.billingAddress.postcode}
-                                onChange={(e) => handleInputChange('billingAddress.postcode', e.target.value)}
-                                className={formErrors['billingAddress.postcode'] ? 'invalid' : ''}
-                            />
-                            {formErrors['billingAddress.postcode'] && (
-                                <span className="error-message">{formErrors['billingAddress.postcode']}</span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="billingCountry">Country *</label>
-                            <input 
-                                type="text" 
-                                id="billingCountry" 
-                                value={formData.billingAddress.country}
-                                onChange={(e) => handleInputChange('billingAddress.country', e.target.value)}
-                                className={formErrors['billingAddress.country'] ? 'invalid' : ''}
-                                placeholder="US"
-                            />
-                            {formErrors['billingAddress.country'] && (
-                                <span className="error-message">{formErrors['billingAddress.country']}</span>
-                            )}
-                        </div>
-                    </div>
+                    <AddressElement 
+                        options={{
+                            mode: 'billing',
+                            display: {
+                                name: 'split'  // This enables firstName/lastName fields
+                            },
+                            defaultValues: {
+                                firstName: formData.billingAddress.first_name,
+                                lastName: formData.billingAddress.last_name,
+                                address: {
+                                    line1: formData.billingAddress.line_1,
+                                    line2: formData.billingAddress.line_2,
+                                    city: formData.billingAddress.city,
+                                    state: formData.billingAddress.region,
+                                    postal_code: formData.billingAddress.postcode,
+                                    country: formData.billingAddress.country || 'US'
+                                }
+                            }
+                        }}
+                    />
                 </section>
 
                 <section className="form-section">
