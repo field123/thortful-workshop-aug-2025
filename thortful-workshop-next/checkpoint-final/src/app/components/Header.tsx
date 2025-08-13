@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import CartDropdown from './CartDropdown';
+import styles from './Header.module.css';
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -14,43 +15,161 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
   const [searchPlaceholder] = useState('Birthday card for a Gemini');
 
   return (
-    <header className="bg-white">
+    <header className={styles.header}>
       {/* Top banner */}
-      <div className="bg-black text-white h-[50px] flex items-center">
-        <div className="w-full flex justify-center">
-          <div className="flex items-center divide-x divide-white/30">
-            <span className="px-6" style={{ fontSize: '17.6px', lineHeight: '50px' }}>4 for £10 on A5 Cards</span>
-            <span className="px-6" style={{ fontSize: '17.6px', lineHeight: '50px' }}>2nd Class postage from 99p</span>
-            <span className="px-6" style={{ fontSize: '17.6px', lineHeight: '50px' }}>Order before 6pm for same day dispatch (Mon-Fri excl bank holidays)</span>
+      <div className={styles.topBanner}>
+        <div className={styles.bannerContent}>
+          <div className={styles.bannerItems}>
+            <span className={styles.bannerItem}>4 for £10 on A5 Cards</span>
+            <span className={styles.bannerItem}>2nd Class postage from 99p</span>
+            <span className={styles.bannerItem}>Order before 6pm for same day dispatch (Mon-Fri excl bank holidays)</span>
           </div>
         </div>
       </div>
 
-      {/* Main navigation */}
-      <nav className="flex items-center justify-between max-w-[1200px] mx-auto" style={{ height: '94px', padding: '20px 15px' }}>
+      {/* Mobile menu toggle (hidden checkbox) */}
+      <input type="checkbox" id="mobile-menu-toggle" className={styles.mobileMenuToggle} />
+      
+      {/* Mobile header */}
+      <div className={styles.mobileHeader}>
+        <div className={styles.mobileTopRow}>
+          {/* Hamburger menu */}
+          <label htmlFor="mobile-menu-toggle" className={styles.hamburger}>
+            <span className={styles.hamburgerLine}></span>
+            <span className={styles.hamburgerLine}></span>
+            <span className={styles.hamburgerLine}></span>
+          </label>
+
+          {/* Logo */}
+          <Link href="/" className={styles.mobileLogo}>
+            <Image
+              src="/thortful-logo.svg"
+              alt="thortful orange logo"
+              width={100}
+              height={28}
+              className={styles.mobileLogoImage}
+              priority
+            />
+          </Link>
+
+          {/* Right icons */}
+          <div className={styles.mobileIcons}>
+            <Link href={isAuthenticated ? "/account" : "/login"}>
+              <Image src="/user-icon.svg" alt="thortful account icon" width={20} height={20} />
+            </Link>
+            <CartDropdown />
+          </div>
+        </div>
+
+        {/* Mobile search bar */}
+        <div className={styles.mobileSearchContainer}>
+          <div style={{ position: 'relative' }}>
+            <Image
+              src="/search-icon.svg"
+              alt=""
+              width={20}
+              height={20}
+              className={styles.mobileSearchIcon}
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={searchPlaceholder}
+              className={styles.mobileSearchInput}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <nav className={styles.mobileMenu}>
+        <div style={{ padding: '20px' }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/cards/birthday" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>
+                Birthday
+              </Link>
+            </li>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/cards/anniversary" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>
+                Anniversary
+              </Link>
+            </li>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/cards" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>
+                Card & Gift
+              </Link>
+            </li>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/personalised-cards" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>
+                Personalised Cards
+              </Link>
+            </li>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/cards" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>
+                All Occasions
+              </Link>
+            </li>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/creators/list" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>
+                Our Creators
+              </Link>
+            </li>
+            <li style={{ marginBottom: '20px' }}>
+              <Link href="/refer-a-friend" style={{ fontSize: '18px', color: '#f57c00', textDecoration: 'none' }}>
+                Get £5 Off
+              </Link>
+            </li>
+          </ul>
+          
+          <hr style={{ margin: '30px 0', borderColor: '#e5e5e5' }} />
+          
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            <li style={{ marginBottom: '15px' }}>
+              <Link href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'black', textDecoration: 'none' }}>
+                <Image src="/calendar-icon.svg" alt="Reminders" width={20} height={20} />
+                Reminders
+              </Link>
+            </li>
+            <li style={{ marginBottom: '15px' }}>
+              <Link href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'black', textDecoration: 'none' }}>
+                <Image src="/heart-icon.svg" alt="Saved" width={20} height={20} />
+                Saved
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* Overlay */}
+      <label htmlFor="mobile-menu-toggle" className={styles.overlay}></label>
+
+      {/* Desktop navigation */}
+      <nav className={styles.mainNav}>
         {/* Logo */}
-        <Link href="/" className="flex-shrink-0">
+        <Link href="/" className={styles.logo}>
           <Image
             src="/thortful-logo.svg"
             alt="thortful orange logo"
             width={151}
             height={43}
-            className="w-[151px] h-[43px]"
+            className={styles.logoImage}
             priority
           />
         </Link>
 
         {/* Search bar */}
-        <div className="relative flex-1 max-w-[725px] mx-[15px]">
+        <div className={styles.searchContainer}>
           <Image
             src="/search-icon.svg"
             alt=""
             width={20}
             height={20}
-            className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50"
+            className={styles.searchIcon}
           />
           {!searchQuery && (
-            <div className="absolute left-12 top-1/2 -translate-y-1/2 text-[#999] pointer-events-none" style={{ fontSize: '16px' }}>
+            <div className={styles.searchPlaceholder}>
               {searchPlaceholder}
             </div>
           )}
@@ -58,79 +177,77 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-[30px] border-2 border-[#e5e5e5] hover:border-[#d0d0d0] focus:border-[#f57c00] focus:outline-none
-                     bg-[#fafafa] hover:bg-[#f5f5f5] focus:bg-white transition-all duration-200"
-            style={{ height: '50px', fontSize: '16px', paddingLeft: '50px', paddingRight: '50px', caretColor: '#f57c00' }}
+            className={styles.searchInput}
           />
         </div>
 
         {/* Right navigation */}
-        <ul className="flex items-center gap-0">
-          <li>
+        <ul className={styles.rightNav}>
+          <li className={styles.navItem}>
             <Link 
               href={isAuthenticated ? "/account" : "/login"} 
-              className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors"
+              className={styles.navLink}
             >
               <Image src="/user-icon.svg" alt="thortful account icon" width={20} height={20} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>
+              <span className={styles.navText}>
                 {isAuthenticated ? 'Account' : 'Sign in'}
               </span>
             </Link>
           </li>
-          <li>
-            <Link href="#" className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
+          <li className={styles.navItem}>
+            <Link href="#" className={styles.navLink}>
               <Image src="/calendar-icon.svg" alt="thortful reminders icon" width={20} height={20} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>Reminders</span>
+              <span className={styles.navText}>Reminders</span>
             </Link>
           </li>
-          <li>
-            <button className="flex items-center gap-1 px-3 py-2 hover:text-[#f57c00] transition-colors">
+          <li className={styles.navItem}>
+            <button className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
               <Image src="/heart-icon.svg" alt="thortful favourite cards icon" width={20} height={20} />
-              <span style={{ fontSize: '13px', fontFamily: 'Roboto, Arial, Helvetica, sans-serif' }}>Saved</span>
+              <span className={styles.navText}>Saved</span>
             </button>
           </li>
-          <li>
+          <li className={styles.navItem}>
             <CartDropdown />
           </li>
         </ul>
       </nav>
 
       {/* Category navigation */}
-      <nav className="bg-white" style={{ borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5', height: '39px' }}>
-        <div className="max-w-[1200px] mx-auto">
-          <ul className="flex items-center px-[15px]" style={{ height: '39px' }}>
-            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
-              <Link href="/cards/birthday" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+      <nav className={styles.categoryNav}>
+        <div className={styles.categoryContainer}>
+          <ul className={styles.categoryList}>
+            <li className={styles.categoryItem}>
+              <Link href="/cards/birthday" className={styles.categoryLink}>
                 Birthday
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
-              <Link href="/cards/anniversary" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+            <li className={styles.categoryItem}>
+              <Link href="/cards/anniversary" className={styles.categoryLink}>
                 Anniversary
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
-              <Link href="/cards" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+            <li className={styles.categoryItem}>
+              <Link href="/cards" className={styles.categoryLink}>
                 Card & Gift
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
-              <Link href="/personalised-cards" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+            <li className={styles.categoryItem}>
+              <Link href="/personalised-cards" className={styles.categoryLink}>
                 Personalised Cards
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
-              <Link href="/cards" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+            <li className={styles.categoryItem}>
+              <Link href="/cards" className={styles.categoryLink}>
                 All Occasions
               </Link>
             </li>
-            <li style={{ paddingRight: '20px', display: 'inline-block' }}>
-              <Link href="/creators/list" className="text-black hover:text-[#f57c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+            <li className={styles.categoryItem}>
+              <Link href="/creators/list" className={styles.categoryLink}>
                 Our Creators
               </Link>
             </li>
-            <li className="ml-auto" style={{ paddingRight: '0', display: 'block' }}>
-              <Link href="/refer-a-friend" className="text-[#f57c00] hover:text-[#ef6c00] transition-colors" style={{ fontSize: '16px', fontWeight: '500', padding: '0 4px', lineHeight: '24.96px' }}>
+            <li className={styles.categoryItem}>
+              <Link href="/refer-a-friend" className={`${styles.categoryLink} ${styles.categoryHighlight}`}>
                 Get £5 Off
               </Link>
             </li>

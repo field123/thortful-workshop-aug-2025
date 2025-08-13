@@ -1,10 +1,11 @@
 "use server"
 
-import { postV2AccountMembersTokens } from "@epcc-sdk/sdks-shopper"
+import { postV2AccountMembersTokens} from "@epcc-sdk/sdks-shopper"
 import {initializeShopperClient} from "@/lib/epcc-shopper-client";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {ACCOUNT_MEMBER_TOKEN_COOKIE_KEY} from "@/app/constants";
+import {syncEpPaymentCustomer} from "@/app/register/sync-ep-payments";
 
 const passwordProfileId = process.env.PASSWORD_PROFILE_ID
 
@@ -49,18 +50,20 @@ export async function registerUser(redirectUrl: string | null, prevState: any, f
             };
         }
 
-        /**
-         * TODO Need to create a stripe customer here
-         */
-
             // set the token on a cookie
-        const token = response.data?.data?.[0]
+        const account = response.data?.data?.[0]
         const expires = response.data?.data?.[0].expires
-        if (!token || !expires) {
+        if (!account || !expires) {
             return {
                 message: 'Login response did not contain token or expiration'
             };
         }
+
+        const resultCreation = await syncEpPaymentCustomer({
+            email: email,
+            name: name,
+            accountId: account.account_id!
+        })
 
         const cookieStore = await cookies();
 
@@ -73,7 +76,7 @@ export async function registerUser(redirectUrl: string | null, prevState: any, f
                         [item.account_id!]: item
                     }
                 }, {}),
-                selected: token.account_id,
+                selected: account.account_id,
                 accountMemberId: response.data.meta?.account_member_id
             }),
             httpOnly: true,
@@ -92,3 +95,4 @@ export async function registerUser(redirectUrl: string | null, prevState: any, f
     const destination = redirectUrl || "/";
     redirect(destination)
 }
+
