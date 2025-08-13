@@ -134,28 +134,6 @@ export default function Home() {
         showPlaceholder={true}
       />
 
-      {/* App promotion banner */}
-      <section className="bg-[#f5f5f5] py-6">
-        <div className="max-w-[1200px] mx-auto px-[15px]">
-          <Link 
-            href="https://link-app.thortful.com/ztJf/hk6ykwq0" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <div className="relative h-[120px] md:h-[150px] overflow-hidden">
-              <Image
-                src="https://images-fe.thortful.com/cdn-cgi/image/format=auto,%20quality=60/img/banners/app-promo-banner-android-bau.jpg"
-                alt="get the android app on play store"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1200px) 100vw, 1200px"
-              />
-            </div>
-          </Link>
-        </div>
-      </section>
-
       {/* SEO content */}
       <section className="max-w-[1200px] mx-auto px-[15px] py-12 text-center">
         <h1 className="text-3xl font-bold mb-6">
