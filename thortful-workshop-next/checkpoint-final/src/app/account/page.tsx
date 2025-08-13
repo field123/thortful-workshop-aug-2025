@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ACCOUNT_MEMBER_TOKEN_COOKIE_KEY } from "@/app/constants";
 import { getV2AccountMembers, getV2Accounts, listSubscriptions } from "@epcc-sdk/sdks-shopper";
 import { initializeShopperClient } from "@/lib/epcc-shopper-client";
+import CancelSubscriptionButton from "./CancelSubscriptionButton";
 import styles from "./page.module.css";
 
 initializeShopperClient();
@@ -46,6 +47,30 @@ async function getAccountData(token: string) {
     }
 }
 
+export const dynamic = 'force-dynamic'; // Ensure this page is always fresh
+
+// Helper function to determine subscription display status and style
+function getSubscriptionDisplayInfo(subscription: any) {
+    const meta = subscription.meta;
+    const status = meta?.status;
+    
+    // Check state flags in meta
+    if (meta?.canceled) {
+        return { text: 'Cancelled', className: 'cancelled' };
+    } else if (meta?.paused) {
+        return { text: 'Paused', className: 'paused' };
+    } else if (meta?.pending) {
+        return { text: 'Pending Activation', className: 'pending' };
+    } else if (meta?.suspended) {
+        return { text: 'Suspended', className: 'suspended' };
+    } else if (status === 'active') {
+        return { text: 'Active', className: 'active' };
+    }
+    
+    // Fallback
+    return { text: 'Unknown', className: 'unknown' };
+}
+
 export default async function AccountPage() {
     const cookieStore = await cookies();
     const authToken = cookieStore.get(ACCOUNT_MEMBER_TOKEN_COOKIE_KEY)?.value;
@@ -67,7 +92,7 @@ export default async function AccountPage() {
     })
 
     console.log("Subs request: ", subscriptions.request.headers, subscriptions.request.url, subscriptions.request.method);
-    console.log("Subscriptions:", subscriptions.data, subscriptions.error);
+    console.log("Subscriptions:", subscriptions.data?.data?.map((item) => item.meta.state), subscriptions.error);
 
     return (
         <div className={styles.container}>
@@ -111,7 +136,14 @@ export default async function AccountPage() {
                     
                     {subscriptions.data?.data && subscriptions.data.data.length > 0 ? (
                         <div className={styles.subscriptionsGrid}>
-                            {subscriptions.data.data.map((subscription: any) => {
+                            {subscriptions.data.data
+                                .sort((a: any, b: any) => {
+                                    // Sort by created_at date, newest first
+                                    const dateA = new Date(a.meta?.timestamps?.created_at || 0);
+                                    const dateB = new Date(b.meta?.timestamps?.created_at || 0);
+                                    return dateB.getTime() - dateA.getTime();
+                                })
+                                .map((subscription: any) => {
                                 // Get the plan using the plan_id from subscription attributes
                                 const planId = subscription.attributes?.plan_id;
                                 const plan = subscriptions.data?.included?.plans?.find((p: any) => p.id === planId);
@@ -138,22 +170,32 @@ export default async function AccountPage() {
                                     formattedPrice = `${formattedPrice}/${intervalText}`;
                                 }
                                 
+                                // Get subscription display info
+                                const displayInfo = getSubscriptionDisplayInfo(subscription);
+                                
                                 return (
                                     <div key={subscription.id} className={styles.subscriptionCard}>
                                         <div className={styles.subscriptionHeader}>
                                             <h3 className={styles.subscriptionName}>
                                                 {plan?.attributes?.name || 'Thortful Plus'}
                                             </h3>
-                                            <span className={`${styles.status} ${styles[subscription.meta?.status || 'active']}`}>
-                                                {subscription.meta?.status || 'Active'}
+                                            <span className={`${styles.status} ${styles[displayInfo.className]}`}>
+                                                {displayInfo.text}
                                             </span>
                                         </div>
                                         
                                         <div className={styles.subscriptionDetails}>
                                             <p className={styles.price}>{formattedPrice}</p>
-                                            {subscription.meta?.invoice_after && (
+                                            {/* Show next billing only for active subscriptions */}
+                                            {subscription.meta?.status === 'active' && !subscription.meta?.canceled && !subscription.meta?.paused && subscription.meta?.invoice_after && (
                                                 <p className={styles.nextBilling}>
                                                     Next billing: {new Date(subscription.meta.invoice_after).toLocaleDateString('en-GB')}
+                                                </p>
+                                            )}
+                                            {/* Show go live date for pending subscriptions */}
+                                            {subscription.meta?.pending && subscription.attributes?.go_live_after && (
+                                                <p className={styles.nextBilling}>
+                                                    Starts: {new Date(subscription.attributes.go_live_after).toLocaleDateString('en-GB')}
                                                 </p>
                                             )}
                                         </div>
@@ -164,19 +206,22 @@ export default async function AccountPage() {
                                             </div>
                                         )}
 
-                                        <div className={styles.benefits}>
-                                            <h4 className={styles.benefitsTitle}>Your Benefits:</h4>
-                                            <ul className={styles.benefitsList}>
-                                                <li>Free delivery on all orders</li>
-                                                <li>10% off everything</li>
-                                                <li>Early access to new cards</li>
-                                                <li>Exclusive member offers</li>
-                                            </ul>
-                                        </div>
-
-                                        <button className={styles.manageButton}>
-                                            Manage Subscription
-                                        </button>
+                                        {/* Show cancel button only for active subscriptions that aren't already canceled */}
+                                        {subscription.meta?.status === 'active' && !subscription.meta?.canceled && !subscription.meta?.paused && (
+                                            <CancelSubscriptionButton subscriptionId={subscription.id} />
+                                        )}
+                                        
+                                        {/* Show appropriate message for other states */}
+                                        {subscription.meta?.paused && (
+                                            <div className={styles.stateMessage}>
+                                                Subscription is paused
+                                            </div>
+                                        )}
+                                        {subscription.meta?.canceled && (
+                                            <div className={styles.stateMessage}>
+                                                Subscription has been cancelled
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}
