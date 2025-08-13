@@ -67,22 +67,22 @@ export default function Footer() {
   return (
     <footer className="bg-[#f5f5f5] mt-8">
       {/* Newsletter section */}
-      <div className="bg-[#f57c00] text-white py-10">
+      <div className="bg-[#f57c00] text-white py-12 md:py-16">
         <div className="max-w-[1200px] mx-auto px-[15px] text-center">
-          <h3 className="text-2xl font-bold mb-2">Emails worth opening. (Promise.)</h3>
-          <p className="mb-6 text-lg">Sign up for cool cards, juicy offers, and relationship-saving reminders.</p>
-          <form className="max-w-[500px] mx-auto flex gap-2">
+          <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">Emails worth opening. (Promise.)</h3>
+          <p className="mb-8 text-base md:text-lg lg:text-xl opacity-95">Sign up for cool cards, juicy offers, and relationship-saving reminders.</p>
+          <form className="max-w-[600px] mx-auto flex flex-col sm:flex-row gap-3">
             <input
               type="email"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 rounded-full px-5 py-3 text-black placeholder-gray-500 text-sm"
+              className="flex-1 rounded-full px-6 py-3.5 text-black placeholder-gray-500 text-base focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
               required
             />
             <button
               type="submit"
-              className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors text-sm font-medium whitespace-nowrap"
+              className="bg-black text-white px-8 py-3.5 rounded-full hover:bg-gray-800 transition-all duration-200 text-base font-semibold whitespace-nowrap shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               Sign Up
             </button>

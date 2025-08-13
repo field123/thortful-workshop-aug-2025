@@ -58,9 +58,9 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-[30px] border-2 border-transparent focus:border-[#f57c00] focus:outline-none
-                     focus:bg-white transition-all"
-            style={{ height: '50px', backgroundColor: 'rgb(241, 241, 242)', fontSize: '16px', paddingLeft: '50px', paddingRight: '50px', caretColor: '#f57c00' }}
+            className="w-full rounded-[30px] border-2 border-[#e5e5e5] hover:border-[#d0d0d0] focus:border-[#f57c00] focus:outline-none
+                     bg-[#fafafa] hover:bg-[#f5f5f5] focus:bg-white transition-all duration-200"
+            style={{ height: '50px', fontSize: '16px', paddingLeft: '50px', paddingRight: '50px', caretColor: '#f57c00' }}
           />
         </div>
 
