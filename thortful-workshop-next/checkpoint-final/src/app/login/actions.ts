@@ -46,8 +46,6 @@ export async function loginUser(redirectUrl: string | null, prevState: any, form
             };
         }
 
-        console.log("Login response:", response.data.data);
-
         // set the token on a cookie
         const token = response.data?.data?.[0]
         const expires = response.data?.data?.[0].expires

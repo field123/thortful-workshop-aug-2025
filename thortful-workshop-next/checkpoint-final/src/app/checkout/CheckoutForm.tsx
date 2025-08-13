@@ -173,49 +173,6 @@ export default function CheckoutForm({ userData, isAuthenticated, cart }: Checko
                         <p>Logged in as: <strong>{userData?.email}</strong></p>
                     </div>
                 )}
-                
-                <section className="form-section">
-                    <h2>Customer Information</h2>
-                    {(!isAuthenticated || hasSubscriptionItems) && (
-                        <>
-                            <div className="form-group">
-                                <label htmlFor="email">
-                                    Email {!isAuthenticated && hasSubscriptionItems ? '*' : ''}
-                                </label>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    value={formData.customer.email}
-                                    onChange={(e) => handleInputChange('customer.email', e.target.value)}
-                                    className={formErrors['customer.email'] ? 'invalid' : ''}
-                                    placeholder="john@example.com"
-                                    readOnly={isAuthenticated}
-                                />
-                                {formErrors['customer.email'] && (
-                                    <span className="error-message">{formErrors['customer.email']}</span>
-                                )}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="name">
-                                    Full Name {!isAuthenticated && hasSubscriptionItems ? '*' : ''}
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    value={formData.customer.name}
-                                    onChange={(e) => handleInputChange('customer.name', e.target.value)}
-                                    className={formErrors['customer.name'] ? 'invalid' : ''}
-                                    placeholder="John Doe"
-                                    readOnly={isAuthenticated}
-                                />
-                                {formErrors['customer.name'] && (
-                                    <span className="error-message">{formErrors['customer.name']}</span>
-                                )}
-                            </div>
-                        </>
-                    )}
-                </section>
 
                 <section className="form-section">
                     <h2>Billing Address</h2>

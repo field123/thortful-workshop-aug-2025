@@ -24,7 +24,7 @@ export const config = {
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
     if (typeof clientId !== "string") {
-        console.log("Missing client ID")
+        console.error("Missing client ID")
         const res = new NextResponse(null, { status: 500 })
         res.headers.set("x-error-message", "Missing environment variable")
         return res

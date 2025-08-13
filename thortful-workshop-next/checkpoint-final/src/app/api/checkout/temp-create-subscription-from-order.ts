@@ -17,8 +17,6 @@ export async function temporaryCreateSubscriptionFromOrder({orderId, clientCrede
 
     const extractedSubscriptionItems = (cart.included?.items?.filter(filterSubscriptionItems) as SubscriptionItemObject["data"][]) || [];
 
-    console.log("Extracted subscription items from cart:", extractedSubscriptionItems);
-
     const cartCurrency = cart.data?.meta?.display_price?.with_tax?.currency ?? "GBP";
 
     const createSubscriptionPromises = extractedSubscriptionItems.map((item) => {
@@ -56,7 +54,7 @@ export async function temporaryCreateSubscriptionFromOrder({orderId, clientCrede
         if (!result.ok) {
             console.error(`Failed to create subscription for item ${index}:`, result.statusText, await result.json());
         } else {
-            console.log(`Successfully created subscription for item ${index}`, await result.json());
+            console.debug(`Successfully created subscription for item ${index}`, await result.json());
         }
     })
 

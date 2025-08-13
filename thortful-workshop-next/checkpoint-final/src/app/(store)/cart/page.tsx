@@ -22,8 +22,6 @@ export default async function CartPage() {
         }
     });
 
-    console.log("Cart response:", response.data?.included?.items);
-
     if (response.error) {
         throw new Error("Failed to fetch cart");
     }

@@ -92,9 +92,6 @@ export default async function AccountPage() {
         }
     })
 
-    console.log("Subs request: ", subscriptions.request.headers, subscriptions.request.url, subscriptions.request.method);
-    console.log("Subscriptions:", subscriptions.data?.data?.map((item) => item.meta.state), subscriptions.error);
-
     return (
         <div className={styles.container}>
             <div className={styles.header}>

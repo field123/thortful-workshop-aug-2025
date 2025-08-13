@@ -49,9 +49,11 @@ export async function registerUser(redirectUrl: string | null, prevState: any, f
             };
         }
 
-        console.log("Self sign up response:", response.data.data);
+        /**
+         * TODO Need to create a stripe customer here
+         */
 
-        // set the token on a cookie
+            // set the token on a cookie
         const token = response.data?.data?.[0]
         const expires = response.data?.data?.[0].expires
         if (!token || !expires) {

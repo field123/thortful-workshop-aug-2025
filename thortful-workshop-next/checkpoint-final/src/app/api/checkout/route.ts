@@ -75,12 +75,6 @@ export async function POST(request: Request) {
     // Retrieve the Stripe customer ID from account data
     const stripeCustomerId = (accountData as unknown as { 'stripe-account-id': string })?.['stripe-account-id'];
 
-
-    console.log("Checkout route called with data:", req);
-    console.log("member data:", memberResponse.data);
-    console.log("Stripe customer ID:", stripeCustomerId);
-    console.log("Account data:", accountDataResponse.data);
-
     // 0. create a client credentials shopper client
     const clientCredentialsToken = await createAnAccessToken({
         body: {
@@ -93,8 +87,6 @@ export async function POST(request: Request) {
     if (clientCredentialsToken.error) {
         return Response.json({ error: "Failed to create client credentials token" }, { status: 500 });
     }
-
-    console.log("Client credentials token result:", clientCredentialsToken.error, clientCredentialsToken.data);
 
     /**
      * 1. Set payment intent on cart
@@ -124,9 +116,6 @@ export async function POST(request: Request) {
             }
         }
     })
-
-    console.log("Payment intent request: ", paymentResult.request.headers, paymentResult.request.body);
-    console.log("Payment intent result:", paymentResult.error, paymentResult.data);
 
     /**
      * 2. Perform checkout to turn cart into order
@@ -175,8 +164,6 @@ export async function POST(request: Request) {
         }
     })
 
-    console.log("Checkout response:", checkoutResponse.error, checkoutResponse.data);
-
     if (checkoutResponse.error) {
         return Response.json({ error: "Failed to checkout" }, { status: 500 });
     }
@@ -203,7 +190,6 @@ export async function POST(request: Request) {
         }
     })
 
-    console.log("Order confirmation response:", orderConfirmationResponse.error, orderConfirmationResponse.data);
     if (orderConfirmationResponse.error) {
         return Response.json({ error: "Failed to confirm order" }, { status: 500 });
     }
@@ -224,8 +210,6 @@ export async function POST(request: Request) {
     if (cartResponse.error) {
         return Response.json({ error: "Failed to fetch cart" }, { status: 500 });
     }
-
-    console.log("Payment method id: ", (paymentResult.data as any)?.meta?.payment_intent?.payment_intent?.payment_method?.id)
 
     const subsCreationResult = await temporaryCreateSubscriptionFromOrder({
         orderId: orderId,
@@ -252,8 +236,6 @@ export async function POST(request: Request) {
         return Response.json({ error: "Failed to delete cart" }, { status: 500 });
     }
 
-    console.log("Delete cart response:", deleteCartResponse.error, deleteCartResponse.data);
-
     /**
      * 6. set new cart cookie
      */
@@ -270,8 +252,6 @@ export async function POST(request: Request) {
     if (createdCart.error) {
         return Response.json({ error: "Failed to create new cart" }, { status: 500 });
     }
-
-    console.log("Created new cart:", createdCart.data);
 
     const res = NextResponse.json({ successUrl: new URL(`/checkout/success/${orderId}`, request.url).toString() }, { status: 200 });
 
