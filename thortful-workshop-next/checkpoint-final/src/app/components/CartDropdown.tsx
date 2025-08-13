@@ -159,7 +159,7 @@ export default function CartDropdown() {
           <div className="max-h-96 overflow-y-auto">
             {isLoading ? (
               <div className="p-4 text-center text-gray-500">Loading...</div>
-            ) : !cartData?.included?.items || cartData.included.items.length === 0 ? (
+            ) : !cartData?.included?.items || cartData?.included.items.length === 0 ? (
               <div className="p-8 text-center">
                 <p className="text-gray-500 mb-4">Your basket is empty</p>
                 <Link
@@ -172,7 +172,7 @@ export default function CartDropdown() {
               </div>
             ) : (
               <div className="p-4">
-                {cartData.included.items.map((item) => {
+                {cartData.included?.items.map((item) => {
                   const itemId = getItemId(item);
                   const itemName = getItemName(item);
                   const itemDescription = getItemDescription(item);
@@ -219,7 +219,7 @@ export default function CartDropdown() {
             )}
           </div>
 
-          {cartData?.included?.items && cartData.included.items.length > 0 && (
+          {cartData?.included?.items && cartData?.included.items.length > 0 && (
             <div className="p-4 border-t border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-semibold text-gray-900">Total</span>
