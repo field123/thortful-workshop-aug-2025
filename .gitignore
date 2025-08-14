@@ -7,3 +7,9 @@ data
 .DS_Store
 
 scripts
+
+node_modules/
+
+.idea/
+
+.next/
