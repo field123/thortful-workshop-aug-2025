@@ -233,6 +233,7 @@ export async function POST(request: Request) {
     })
 
     if (deleteCartResponse.error) {
+        console.error("Failed to delete cart", JSON.stringify(deleteCartResponse.error));
         return Response.json({ error: "Failed to delete cart" }, { status: 500 });
     }
 
@@ -268,5 +269,3 @@ export async function POST(request: Request) {
 
     return res;
 }
-
-

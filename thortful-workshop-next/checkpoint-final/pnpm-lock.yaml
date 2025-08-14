@@ -12,8 +12,8 @@ importers:
         specifier: ^0.0.10
         version: 0.0.10
       '@epcc-sdk/sdks-shopper':
-        specifier: ^0.0.35
-        version: 0.0.35
+        specifier: ^0.0.36
+        version: 0.0.36
       '@stripe/react-stripe-js':
         specifier: ^3.9.0
         version: 3.9.0(@stripe/stripe-js@7.8.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -65,8 +65,8 @@ packages:
   '@epcc-sdk/sdks-nextjs@0.0.10':
     resolution: {integrity: sha512-D0TVVZziEN1K8/y1d1uLeaU8MXZBro8gG8hVPMIH/oK9GFLCtb+ib0rXuyYbkAbooFn/6nAoY+FjEzmmD/y8bw==}
 
-  '@epcc-sdk/sdks-shopper@0.0.35':
-    resolution: {integrity: sha512-M6kcYAlof9qiM7aQYTQ5+l9RazNXrWLpFG+Bwf2W4rxgy8IHbZefjpzVXj8BzBH+2gCwRkljwpTaFRtSCJwOWg==}
+  '@epcc-sdk/sdks-shopper@0.0.36':
+    resolution: {integrity: sha512-M2vtqi+tv5dg7ELk+pXuvZzkaYT+XF3xLmyXZvlo20E36Fga/+WuZH05kdjuduLD7gm3xxmyY7ttKD/7sH/ifw==}
     peerDependencies:
       '@tanstack/react-query': ^5.69.0
     peerDependenciesMeta:
@@ -644,7 +644,7 @@ snapshots:
     dependencies:
       '@hey-api/client-fetch': 0.6.0
 
-  '@epcc-sdk/sdks-shopper@0.0.35':
+  '@epcc-sdk/sdks-shopper@0.0.36':
     dependencies:
       '@hey-api/client-fetch': 0.6.0
 
