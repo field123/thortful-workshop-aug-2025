@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@epcc-sdk/sdks-nextjs": "^0.0.10",
-    "@epcc-sdk/sdks-shopper": "^0.0.35",
+    "@epcc-sdk/sdks-shopper": "0.0.35",
     "@stripe/react-stripe-js": "^3.9.0",
     "@stripe/stripe-js": "^7.8.0",
     "next": "15.4.6",
